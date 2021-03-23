@@ -85,7 +85,9 @@ def __sendRequest_post(pApiUrl, pData):
 	if r.status_code == 200:
 		return r.json()
 	else:
-		print("%s: Failed request: %s\n" % __name__, r.text)
+		# print("%s: Failed request: %s\n" % __name__, r.text)
+		# log.error("Failed request: `%s`" % ( r.text))
+		log.error("%s: Failed request: `%s`: %d: %s\n" % (__sendRequest_get.__name__, lRequestUrl, r.status_code, r.text))
 
 
 def challengeGet(freebox_app_id):
@@ -183,12 +185,20 @@ def get_wifi_accessPoint_stations(pAccessPoint):
 	return __sendRequest_get(lApiUrl)
 
 
+def	_credentials_filePath():
+	# script_dir = os.path.dirname(os.path.realpath(__file__))
+	# cfg_file = os.path.join(script_dir, ".credentials")
+
+	cfg_file = os.path.join(os.getcwd(), ".credentials")
+
+	return cfg_file
+
+
 def login_authGet(pRegister):
 
 	lEndpoint = __endpoint()
 
-	script_dir = os.path.dirname(os.path.realpath(__file__))
-	cfg_file = os.path.join(script_dir, ".credentials")
+	cfg_file = _credentials_filePath()
 	ret_args={}
 	f = configp.RawConfigParser()
 	f.read(cfg_file)
@@ -257,8 +267,7 @@ def login_authSet(pAppId, pAppName, pDeviceName, auth_infos):
 
     lEndpoint= __endpoint()
 
-    script_dir = os.path.dirname(os.path.realpath(__file__))
-    cfg_file = os.path.join(script_dir, ".credentials")
+    cfg_file = _credentials_filePath()
     f = configp.RawConfigParser()
 
     f.add_section(lEndpoint)
