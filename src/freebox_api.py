@@ -177,7 +177,7 @@ def get_wifi_accessPointsList():
 def get_wifi_accessPoint_stations(pAccessPoint):
 	# -P => update pour avec POP
 	lApiUrl =	'wifi/ap/'
-	lApiUrl	+=	str(pAccessPoint)
+	lApiUrl	+=	str(pAccessPoint) + '/'
 	lApiUrl	+=	'stations/'
 
 	return __sendRequest_get(lApiUrl)

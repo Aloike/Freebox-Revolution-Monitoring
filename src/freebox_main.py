@@ -229,170 +229,170 @@ def get_and_print_metrics(creds, s_switch, s_ports, s_sys, s_disk, s_lan, s_wifi
 #                 	my_data[tag1+"."+tag2+"."+tag3+"."+'name'] = sensor_object['name']
 #                 	my_data[tag1+"."+tag2+"."+tag3+"."+'value'] = sensor_object['value']
 #                 	i=i+1
-#
-# option -S
+# #
+# # option -S
 
-    if s_switch:
-        switch_json_raw = freebox_api.get_switch_status()
+#     if s_switch:
+#         switch_json_raw = freebox_api.get_switch_status()
         
-        tag1="Switch"
-        tag2="NULL"
-        tag3="NULL" 
+#         tag1="Switch"
+#         tag2="NULL"
+#         tag3="NULL" 
         
-        if 'result' in switch_json_raw:
-            for i in switch_json_raw['result']:
-                # 0 down, 1 up
-                tag2="link#"+str(i['id'])
-                if i['link'] == "up" : my_data[tag1+"."+tag2+"."+tag3+"."+'Etat'] = 1
-                else: my_data[tag1+"."+tag2+"."+tag3+"."+'Etat'] = 0
-                # 0 auto, 1 10Base-T, 2 100Base-T, 3 1000Base-T
-                # Fbox POP : ?? pour port#3 2.5G  ??
-                # In fact the duplex is appended like 10BaseT-HD, 1000BaseT-FD, 1000BaseT-FD
-                # So just is an "in" because duplex isn't really usefull
-                if "10BaseT" in i['mode']:
-                    my_data[tag1+"."+tag2+"."+tag3+"."+'mode'] = 1
-                elif "100BaseT" in i['mode']:
-                    my_data[tag1+"."+tag2+"."+tag3+"."+'mode'] = 2
-                elif "1000BaseT" in i['mode']:
-                    my_data[tag1+"."+tag2+"."+tag3+"."+'mode'] = 3
-                else:
-                    my_data[tag1+"."+tag2+"."+tag3+"."+'mode'] = 0  # auto
+#         if 'result' in switch_json_raw:
+#             for i in switch_json_raw['result']:
+#                 # 0 down, 1 up
+#                 tag2="link#"+str(i['id'])
+#                 if i['link'] == "up" : my_data[tag1+"."+tag2+"."+tag3+"."+'Etat'] = 1
+#                 else: my_data[tag1+"."+tag2+"."+tag3+"."+'Etat'] = 0
+#                 # 0 auto, 1 10Base-T, 2 100Base-T, 3 1000Base-T
+#                 # Fbox POP : ?? pour port#3 2.5G  ??
+#                 # In fact the duplex is appended like 10BaseT-HD, 1000BaseT-FD, 1000BaseT-FD
+#                 # So just is an "in" because duplex isn't really usefull
+#                 if "10BaseT" in i['mode']:
+#                     my_data[tag1+"."+tag2+"."+tag3+"."+'mode'] = 1
+#                 elif "100BaseT" in i['mode']:
+#                     my_data[tag1+"."+tag2+"."+tag3+"."+'mode'] = 2
+#                 elif "1000BaseT" in i['mode']:
+#                     my_data[tag1+"."+tag2+"."+tag3+"."+'mode'] = 3
+#                 else:
+#                     my_data[tag1+"."+tag2+"."+tag3+"."+'mode'] = 0  # auto
 
-#
-# Option -P
-#
-# Switch ports status
-    if s_ports:
+# #
+# # Option -P
+# #
+# # Switch ports status
+#     if s_ports:
     	 	        
-        tag1="Ports"
-        tag2="NULL"
-        tag3="NULL"
+#         tag1="Ports"
+#         tag2="NULL"
+#         tag3="NULL"
     
-        switch_json_raw = freebox_api.get_switch_status()
-        listeid=[]
-        if 'result' in switch_json_raw:
-            for i in switch_json_raw['result']:
-                listeid.append(i['id'])
+#         switch_json_raw = freebox_api.get_switch_status()
+#         listeid=[]
+#         if 'result' in switch_json_raw:
+#             for i in switch_json_raw['result']:
+#                 listeid.append(i['id'])
 
-        for i in listeid :  
-            switch_port_stats = freebox_api.get_switch_port_stats(i)
-            tag1="Port#"+str(i)
-            tag2="Rx"
-            my_data[tag1+"."+tag2+"."+tag3+"."+'bytes_rate'] = switch_port_stats['result']['rx_bytes_rate']  # bytes/s (?)
-#           my_data[tag1+"."+tag2+"."+tag3+"."+'bytes'] = switch_port_stats['result']['rx_bytes']            # pas de rx_bytes dans l'api !
-            tag2="Tx"
-            my_data[tag1+"."+tag2+"."+tag3+"."+'bytes_rate'] = switch_port_stats['result']['tx_bytes_rate']
-            my_data[tag1+"."+tag2+"."+tag3+"."+'bytes'] = switch_port_stats['result']['tx_bytes']
+#         for i in listeid :  
+#             switch_port_stats = freebox_api.get_switch_port_stats(i)
+#             tag1="Port#"+str(i)
+#             tag2="Rx"
+#             my_data[tag1+"."+tag2+"."+tag3+"."+'bytes_rate'] = switch_port_stats['result']['rx_bytes_rate']  # bytes/s (?)
+# #           my_data[tag1+"."+tag2+"."+tag3+"."+'bytes'] = switch_port_stats['result']['rx_bytes']            # pas de rx_bytes dans l'api !
+#             tag2="Tx"
+#             my_data[tag1+"."+tag2+"."+tag3+"."+'bytes_rate'] = switch_port_stats['result']['tx_bytes_rate']
+#             my_data[tag1+"."+tag2+"."+tag3+"."+'bytes'] = switch_port_stats['result']['tx_bytes']
 
-#
-# Option -D
-# updated for V8 (liste de disque)
-# Fetch internal disk stats
-    if s_disk:
-        json_raw = freebox_api.get_storage_disk()
+# #
+# # Option -D
+# # updated for V8 (liste de disque)
+# # Fetch internal disk stats
+#     if s_disk:
+#         json_raw = freebox_api.get_storage_disk()
         
-        tag1="Disque"
-        tag2="NULL"
-        tag3="NULL"
+#         tag1="Disque"
+#         tag2="NULL"
+#         tag3="NULL"
         
-        if json_raw['success'] :
-            i=1
-            for disk_object in json_raw['result']:
-                tag2 = "dd-" + str(i)
-                if 'idle_duration' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'idle_duration'] = disk_object['idle_duration']
-                if 'read_error_requests' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'read_error_requests'] = disk_object['read_error_requests']
-                if 'read_requests' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'read_requests'] = disk_object['read_requests']
-                if 'spinning' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'spinning'] = disk_object['spinning']
-                if 'table_type' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'table_type'] = disk_object['table_type']
-                if 'firmware' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'firmware'] = disk_object['firmware']
-                if 'type' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'type'] = disk_object['type']
-                if 'idle' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'idle'] = disk_object['idle']
-                if 'connector' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'connector'] = disk_object['connector']
-                if 'id' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'dd_id'] = disk_object['id']
-                if 'write_error_requests' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'write_error_requests'] = disk_object['write_error_requests']
-                if 'state' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'state'] = disk_object['state']
-                if 'write_requests' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'write_requests'] = disk_object['write_requests']
-                if 'total_bytes' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'total_bytes'] = disk_object['total_bytes']
-                if 'model' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'model'] = disk_object['model']
-                if 'active_duration' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'active_duration'] = disk_object['active_duration']
-                if 'temp' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'temp'] = disk_object['temp']
-                if 'serial' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'serial'] = disk_object['serial']
-                if 'id' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'disk_id'] = disk_object['id']
-                # partitions :
-                #
-                if disk_object['partitions'] :
-                   j=1
-                   for partition in disk_object['partitions'] :
-                       tag3="Part-"+str(j)
-                       my_data[tag1+"."+tag2+"."+tag3+"."+'partition#'] = j
-                       if 'fstype' in partition : my_data[tag1+"."+tag2+"."+tag3+"."+'fstype'] = partition['fstype']
-                       if 'disk_id' in partition : my_data[tag1+"."+tag2+"."+tag3+"."+'part_disk_id'] = partition['disk_id']
-                       if 'total_bytes' in partition : my_data[tag1+"."+tag2+"."+tag3+"."+'total_bytes'] = partition['total_bytes']
-                       if 'free_bytes' in partition : my_data[tag1+"."+tag2+"."+tag3+"."+'free_bytes'] = partition['free_bytes']
-                       if 'used_bytes' in partition : my_data[tag1+"."+tag2+"."+tag3+"."+'used_bytes'] = partition['used_bytes']
-                       if 'label' in partition : my_data[tag1+"."+tag2+"."+tag3+"."+'label'] = partition['label']
-                       if 'id' in partition : my_data[tag1+"."+tag2+"."+tag3+"."+'part_id'] = partition['id']
-                       if 'disk_id' in partition : my_data[tag1+"."+tag2+"."+tag3+"."+'part_disk_id'] = partition['disk_id']
+#         if json_raw['success'] :
+#             i=1
+#             for disk_object in json_raw['result']:
+#                 tag2 = "dd-" + str(i)
+#                 if 'idle_duration' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'idle_duration'] = disk_object['idle_duration']
+#                 if 'read_error_requests' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'read_error_requests'] = disk_object['read_error_requests']
+#                 if 'read_requests' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'read_requests'] = disk_object['read_requests']
+#                 if 'spinning' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'spinning'] = disk_object['spinning']
+#                 if 'table_type' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'table_type'] = disk_object['table_type']
+#                 if 'firmware' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'firmware'] = disk_object['firmware']
+#                 if 'type' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'type'] = disk_object['type']
+#                 if 'idle' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'idle'] = disk_object['idle']
+#                 if 'connector' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'connector'] = disk_object['connector']
+#                 if 'id' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'dd_id'] = disk_object['id']
+#                 if 'write_error_requests' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'write_error_requests'] = disk_object['write_error_requests']
+#                 if 'state' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'state'] = disk_object['state']
+#                 if 'write_requests' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'write_requests'] = disk_object['write_requests']
+#                 if 'total_bytes' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'total_bytes'] = disk_object['total_bytes']
+#                 if 'model' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'model'] = disk_object['model']
+#                 if 'active_duration' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'active_duration'] = disk_object['active_duration']
+#                 if 'temp' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'temp'] = disk_object['temp']
+#                 if 'serial' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'serial'] = disk_object['serial']
+#                 if 'id' in disk_object:my_data[tag1+"."+tag2+"."+tag3+"."+'disk_id'] = disk_object['id']
+#                 # partitions :
+#                 #
+#                 if disk_object['partitions'] :
+#                    j=1
+#                    for partition in disk_object['partitions'] :
+#                        tag3="Part-"+str(j)
+#                        my_data[tag1+"."+tag2+"."+tag3+"."+'partition#'] = j
+#                        if 'fstype' in partition : my_data[tag1+"."+tag2+"."+tag3+"."+'fstype'] = partition['fstype']
+#                        if 'disk_id' in partition : my_data[tag1+"."+tag2+"."+tag3+"."+'part_disk_id'] = partition['disk_id']
+#                        if 'total_bytes' in partition : my_data[tag1+"."+tag2+"."+tag3+"."+'total_bytes'] = partition['total_bytes']
+#                        if 'free_bytes' in partition : my_data[tag1+"."+tag2+"."+tag3+"."+'free_bytes'] = partition['free_bytes']
+#                        if 'used_bytes' in partition : my_data[tag1+"."+tag2+"."+tag3+"."+'used_bytes'] = partition['used_bytes']
+#                        if 'label' in partition : my_data[tag1+"."+tag2+"."+tag3+"."+'label'] = partition['label']
+#                        if 'id' in partition : my_data[tag1+"."+tag2+"."+tag3+"."+'part_id'] = partition['id']
+#                        if 'disk_id' in partition : my_data[tag1+"."+tag2+"."+tag3+"."+'part_disk_id'] = partition['disk_id']
                        
-                       j=j+1
-                i=i+1
-#
-# Option -W
-# update for V8, prise en compte de la liste des AP.
-# Wifi stats
-#
-    if s_wifi:
+#                        j=j+1
+#                 i=i+1
+# #
+# # Option -W
+# # update for V8, prise en compte de la liste des AP.
+# # Wifi stats
+# #
+#     if s_wifi:
         
-        sys_json_raw1 = freebox_api.get_wifi_accessPointsList()
-        if sys_json_raw1['success'] :
-            apwifilist = sys_json_raw1['result']
-            for ap in apwifilist : 
-                sys_json_raw = freebox_api.get_wifi_accessPoint_stations(ap['id'])
-                if 'result' in sys_json_raw:        
-                    l=len(sys_json_raw['result'])
-                    tag1="wifi_list"
-                    tag2=ap['name']
-                    # verifier qu'il n'y a pas de "." dans tag2 ! on les supprime
-#                    print("tag2 = ", tag2)
-                    j=0
-                    tagtemp = list(tag2)
-                    while  j < len(tagtemp):	
-                        if tagtemp[j] == ".": 
-                        	tagtemp[j] = ""
-                        j=j+1 
-                    tag2 = "".join(tagtemp)    
-                    tag3="NULL" 
-                    k=0
+#         sys_json_raw1 = freebox_api.get_wifi_accessPointsList()
+#         if sys_json_raw1['success'] :
+#             apwifilist = sys_json_raw1['result']
+#             for ap in apwifilist : 
+#                 sys_json_raw = freebox_api.get_wifi_accessPoint_stations(ap['id'])
+#                 if 'result' in sys_json_raw:        
+#                     l=len(sys_json_raw['result'])
+#                     tag1="wifi_list"
+#                     tag2=ap['name']
+#                     # verifier qu'il n'y a pas de "." dans tag2 ! on les supprime
+# #                    print("tag2 = ", tag2)
+#                     j=0
+#                     tagtemp = list(tag2)
+#                     while  j < len(tagtemp):	
+#                         if tagtemp[j] == ".": 
+#                         	tagtemp[j] = ""
+#                         j=j+1 
+#                     tag2 = "".join(tagtemp)    
+#                     tag3="NULL" 
+#                     k=0
 
-                    while k<l :
-                       if 'mac' in sys_json_raw['result'][k]:
-                          tag3=sys_json_raw['result'][k]['mac']
-                          if 'host' in sys_json_raw['result'][k]:
-                              length_l3_conn = len(sys_json_raw['result'][k]['host']['l3connectivities'])
-                              if 'primary_name' in sys_json_raw['result'][k]['host']:
-                                   if sys_json_raw['result'][k]['host']['primary_name'] != "" : 
-                                         if 'interface' in sys_json_raw['result'][k]['host']:
-                                               if sys_json_raw['result'][k]['host']['interface'] != "" :
-                                                     m=0
-                                                     while m < length_l3_conn :
-                                                         if sys_json_raw['result'][k]['host']['l3connectivities'][m]['af'] == "ipv4":
-                                                             my_data[tag1+"."+tag2+"."+tag3+"."+'primary_name']=sys_json_raw['result'][k]['host']['primary_name']
-                                                             my_data[tag1+"."+tag2+"."+tag3+"."+'host_type']=sys_json_raw['result'][k]['host']['host_type']
-                                                             my_data[tag1+"."+tag2+"."+tag3+"."+'interface']=sys_json_raw['result'][k]['host']['interface']
-                                                             my_data[tag1+"."+tag2+"."+tag3+"."+'addripv4']=sys_json_raw['result'][k]['host']['l3connectivities'][m]['addr']
-                                                             my_data[tag1+"."+tag2+"."+tag3+"."+'reachable']=sys_json_raw['result'][k]['host']['l3connectivities'][m]['reachable']
-                                                             my_data[tag1+"."+tag2+"."+tag3+"."+'active']=sys_json_raw['result'][k]['host']['l3connectivities'][m]['active']
-                                                        # tx/rx bytes
-                                                             my_data[tag1+"."+tag2+"."+tag3+"."+'rx_bytes']=sys_json_raw['result'][k]['rx_bytes']
-                                                             my_data[tag1+"."+tag2+"."+tag3+"."+'rx_rate']=sys_json_raw['result'][k]['rx_rate']
-                                                             my_data[tag1+"."+tag2+"."+tag3+"."+'tx_bytes']=sys_json_raw['result'][k]['tx_bytes']
-                                                             my_data[tag1+"."+tag2+"."+tag3+"."+'tx_rate']=sys_json_raw['result'][k]['tx_rate']
-                                                             lasttimeactivity=sys_json_raw['result'][k]['host']['l3connectivities'][m]['last_activity']
-                                                             date_last_activity=datetime.fromtimestamp(lasttimeactivity)
-                                                             my_data[tag1+"."+tag2+"."+tag3+"."+'last_activity_date']=date_last_activity.strftime("%c")
-                                                             my_data[tag1+"."+tag2+"."+tag3+"."+'AP_ref']=ap['id']
-                                                         m=m+1   
-                       k=k+1
+#                     while k<l :
+#                        if 'mac' in sys_json_raw['result'][k]:
+#                           tag3=sys_json_raw['result'][k]['mac']
+#                           if 'host' in sys_json_raw['result'][k]:
+#                               length_l3_conn = len(sys_json_raw['result'][k]['host']['l3connectivities'])
+#                               if 'primary_name' in sys_json_raw['result'][k]['host']:
+#                                    if sys_json_raw['result'][k]['host']['primary_name'] != "" : 
+#                                          if 'interface' in sys_json_raw['result'][k]['host']:
+#                                                if sys_json_raw['result'][k]['host']['interface'] != "" :
+#                                                      m=0
+#                                                      while m < length_l3_conn :
+#                                                          if sys_json_raw['result'][k]['host']['l3connectivities'][m]['af'] == "ipv4":
+#                                                              my_data[tag1+"."+tag2+"."+tag3+"."+'primary_name']=sys_json_raw['result'][k]['host']['primary_name']
+#                                                              my_data[tag1+"."+tag2+"."+tag3+"."+'host_type']=sys_json_raw['result'][k]['host']['host_type']
+#                                                              my_data[tag1+"."+tag2+"."+tag3+"."+'interface']=sys_json_raw['result'][k]['host']['interface']
+#                                                              my_data[tag1+"."+tag2+"."+tag3+"."+'addripv4']=sys_json_raw['result'][k]['host']['l3connectivities'][m]['addr']
+#                                                              my_data[tag1+"."+tag2+"."+tag3+"."+'reachable']=sys_json_raw['result'][k]['host']['l3connectivities'][m]['reachable']
+#                                                              my_data[tag1+"."+tag2+"."+tag3+"."+'active']=sys_json_raw['result'][k]['host']['l3connectivities'][m]['active']
+#                                                         # tx/rx bytes
+#                                                              my_data[tag1+"."+tag2+"."+tag3+"."+'rx_bytes']=sys_json_raw['result'][k]['rx_bytes']
+#                                                              my_data[tag1+"."+tag2+"."+tag3+"."+'rx_rate']=sys_json_raw['result'][k]['rx_rate']
+#                                                              my_data[tag1+"."+tag2+"."+tag3+"."+'tx_bytes']=sys_json_raw['result'][k]['tx_bytes']
+#                                                              my_data[tag1+"."+tag2+"."+tag3+"."+'tx_rate']=sys_json_raw['result'][k]['tx_rate']
+#                                                              lasttimeactivity=sys_json_raw['result'][k]['host']['l3connectivities'][m]['last_activity']
+#                                                              date_last_activity=datetime.fromtimestamp(lasttimeactivity)
+#                                                              my_data[tag1+"."+tag2+"."+tag3+"."+'last_activity_date']=date_last_activity.strftime("%c")
+#                                                              my_data[tag1+"."+tag2+"."+tag3+"."+'AP_ref']=ap['id']
+#                                                          m=m+1   
+#                        k=k+1
 
         
     
@@ -543,6 +543,35 @@ def do_export(creds, s_switch, s_ports, s_sys, s_disk, s_lan, s_wifi, s_lan_inte
     if s_sys:
         freebox_export.system()
 
+    #
+    # option -S
+    #
+    if s_switch:
+        freebox_export.switch_status()
+
+    #
+    # Option -P
+    #
+    # Switch ports status
+    if s_ports:
+        freebox_export.switch_ports()
+        
+
+    #
+    # Option -D
+    #
+    # Fetch internal disk stats
+    if s_disk:
+        freebox_export.storage_disk()
+
+
+    #
+    # Option -W
+    #
+    # Wifi stats
+    if s_wifi:
+        freebox_export.wifi_ap()
+
 
 
 # Main
@@ -644,6 +673,7 @@ if __name__ == '__main__':
 
     # WARNING: Needs to be removed - Kept here for test purposes only!
     ENDPOINT="http://"+args.Endpoint+"/api/v8/"
+
     freebox_api.setHostname(args.Endpoint)
 
 
