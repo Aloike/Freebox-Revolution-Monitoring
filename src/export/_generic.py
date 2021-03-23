@@ -71,6 +71,20 @@ def	_export_influxdb(pMeasurement, pTagsDict, pFieldsDict):
 def measurement(pApiPath, pApiAttribute, pAttrValue, pApiSubpath='', pTagsDict={}, pFieldsDict={}):
 
 	#
+	#	Measurement name
+	#
+	lMeasurement	=	config.INFLUXDB_MEASUREMENT
+	lMeasurement	+=	"_" + pApiPath
+
+	if (pApiSubpath != ''):
+		lMeasurement	+=	"_" + pApiSubpath
+
+	lMeasurement	+=	"_" + pApiAttribute
+
+	lMeasurement	=	lMeasurement.replace('/', '_')
+
+
+	#
 	#	Tags content
 	#
 	lTagsDict	=	pTagsDict.copy()
@@ -93,7 +107,7 @@ def measurement(pApiPath, pApiAttribute, pAttrValue, pApiSubpath='', pTagsDict={
 	#	Export the measurement
 	#
 	_export_influxdb(
-		config.INFLUXDB_MEASUREMENT,
+		lMeasurement,
 		lTagsDict,
 		lFieldsDict
 	)
