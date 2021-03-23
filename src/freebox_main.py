@@ -33,6 +33,7 @@ from unidecode import unidecode
 import config
 import freebox_export
 import export.connection
+import export.lan
 import export.system
 import freebox.api as freebox_api
 
@@ -525,7 +526,7 @@ def do_export(creds, s_switch, s_ports, s_sys, s_disk, s_lan, s_wifi, s_lan_inte
     # option -L
     #
     if s_lan:
-        freebox_export.lan_config()
+        export.lan.config()
 
     #
     # option -I

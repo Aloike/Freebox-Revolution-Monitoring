@@ -130,11 +130,7 @@ def application_infos(pFile, pVersion):
 
 
 
-def lan_config():
-	# Fetch JSON data
-	json_raw = freebox_api.get_lan_config()
 
-	__exportGenericJson('lan/config', json_raw)
 
 
 
