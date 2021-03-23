@@ -32,6 +32,7 @@ from unidecode import unidecode
 
 import config
 import freebox_export
+import export.system
 import freebox_api
 
 
@@ -541,7 +542,7 @@ def do_export(creds, s_switch, s_ports, s_sys, s_disk, s_lan, s_wifi, s_lan_inte
     # option -H
     #
     if s_sys:
-        freebox_export.system()
+        export.system.all()
 
     #
     # option -S
@@ -628,7 +629,7 @@ if __name__ == '__main__':
                         action='store_true',
                         help="Get and show switch ports stats")
 
-    parser.add_argument('-H', '--status-sys',
+    parser.add_argument('-H', '--system',
                         dest='status_sys',
                         action='store_true',
                         help="Get and show system status")
