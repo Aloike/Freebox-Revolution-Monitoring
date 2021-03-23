@@ -101,6 +101,33 @@ def measurement(pApiPath, pApiAttribute, pAttrValue, pApiSubpath='', pTagsDict={
 # ##############################################################################
 # ##############################################################################
 
+def	genericJson(pApiPath, pJsonRoot, pJsonObjectName, pTagsDict={}, pFieldsDict={}):
+
+	if pJsonObjectName not in pJsonRoot:
+		return
+
+	lJsonData	=	pJsonRoot[pJsonObjectName]
+
+
+	#
+	#	Iterate over model_info attributes and export them
+	#
+	for lJsonKey in lJsonData:
+
+		lJsonValue	=	lJsonData[lJsonKey]
+
+		measurement(
+			pApiPath	=	pApiPath,
+			# pApiSubpath	=	pSubpath,
+			pApiAttribute	=	lJsonKey,
+			pAttrValue	=	lJsonValue,
+			pTagsDict	=	pTagsDict,
+			pFieldsDict	=	pFieldsDict
+		)
+
+# ##############################################################################
+# ##############################################################################
+
 def	genericSubpath(pApiPath, pJsonRoot, pSubpath, pTagsDict={}, pFieldsDict={}):
 
 	if pSubpath not in pJsonRoot:

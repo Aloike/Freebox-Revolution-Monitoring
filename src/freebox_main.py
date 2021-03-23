@@ -32,6 +32,7 @@ from unidecode import unidecode
 
 import config
 import freebox_export
+import export.connection
 import export.system
 import freebox.api as freebox_api
 
@@ -518,7 +519,7 @@ def do_export(creds, s_switch, s_ports, s_sys, s_disk, s_lan, s_wifi, s_lan_inte
     freebox_api.session_open(freebox_app_id, freebox_app_token, freebox_track_id )
 
     freebox_export.application_infos(__file__, VERSION)
-    freebox_export.connection()
+    export.connection.all()
 
     #
     # option -L
