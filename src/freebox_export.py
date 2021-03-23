@@ -8,7 +8,7 @@ import os
 from datetime import datetime
 
 import config
-import freebox_api
+import freebox.api as freebox_api
 
 
 import logging

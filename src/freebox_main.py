@@ -33,7 +33,7 @@ from unidecode import unidecode
 import config
 import freebox_export
 import export.system
-import freebox_api
+import freebox.api as freebox_api
 
 
 import logging
