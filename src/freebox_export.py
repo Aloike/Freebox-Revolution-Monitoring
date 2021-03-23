@@ -640,8 +640,9 @@ def	system():
 
 			# This data is considered as a tag
 			lTags[lJsonKey]	=	lJsonValue
-
-		else:
+		elif	(	lJsonKey	!=	'fans'
+				and	lJsonKey	!=	'model_info'
+				and	lJsonKey	!=	'sensors'	):
 			# disk_status
 			# uptime
 			# uptime_val
