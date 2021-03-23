@@ -29,15 +29,6 @@ log.setLevel(logging.DEBUG)
 # ##############################################################################
 # ##############################################################################
 
-C_KEY_TAG_API_PATH	=	'api_path'
-C_KEY_TAG_API_SUBPATH	=	'api_subpath'
-C_KEY_TAG_API_ATTR	=	'api_attribute'
-
-C_KEY_FIELD_VALUE	=	'value'
-
-# ##############################################################################
-# ##############################################################################
-
 def	all():
 
 	sys_json_raw = freebox_api.get_system()
@@ -45,10 +36,6 @@ def	all():
 		return
 	# log.debug( "sys_json_raw['result'] == %s" % sys_json_raw['result'])
 
-
-	lTags = {
-		C_KEY_TAG_API_PATH	:	'system',
-	}
 
 	lNodeData	=	sys_json_raw['result']
 
@@ -58,14 +45,6 @@ def	all():
 	
 	for lJsonKey in lNodeData:
 
-		# if	(	lJsonKey	==	'board_name'
-		# 	# or	lJsonKey	==	'firmware_version'
-		# 	or	lJsonKey	==	'mac'
-		# 	or	lJsonKey	==	'serial'	):
-
-		# 	# This data is considered as a tag
-		# 	lTags[lJsonKey]	=	lJsonValue
-		# else
 		if	(	lJsonKey	==	'fans'
 			or	lJsonKey	==	'model_info'
 			or	lJsonKey	==	'sensors'	):
@@ -74,36 +53,29 @@ def	all():
 
 		lJsonValue	=	lNodeData[lJsonKey]
 
-		lTags[C_KEY_TAG_API_ATTR]	= lJsonKey
-
-		lFields	=	{
-			C_KEY_FIELD_VALUE	:	lJsonValue
-		}
-
-		export._generic.measurement(lTags, lFields)
+		export._generic.measurement(
+			pApiPath	=	'system',
+			pApiAttribute	=	lJsonKey,
+			pAttrValue	=	lJsonValue
+		)
 
 
 	if	(	'fans'	in lNodeData	):
-		system_fans(lTags, lNodeData)
+		_fans(lNodeData)
 
 	if	(	'model_info'	in lNodeData	):
-		system_modelInfo(lTags, lNodeData)
+		_modelInfo(lNodeData)
 
 	if	(	'sensors'	in lNodeData	):
-		system_sensors(lTags, lNodeData)
+		_sensors(lNodeData)
 
 # ##############################################################################
 # ##############################################################################
 
-def	system_fans(pTags, pNodeSystem):
+def	_fans(pNodeSystem):
 
 	if 'fans' not in pNodeSystem:
 		return
-
-	lTags	=	pTags.copy()
-	lTags[C_KEY_TAG_API_PATH]	=	'system'
-	lTags[C_KEY_TAG_API_SUBPATH]	=	'fans'
-
 
 	lNodeData	=	pNodeSystem['fans']
 
@@ -119,8 +91,10 @@ def	system_fans(pTags, pNodeSystem):
 		lJsonFanData	=	lNodeData[lFanNbr]
 
 		# Use some fan attributes as tags
-		lTags['fan_id']	=	lJsonFanData['id']
-		lTags['fan_name']	=	lJsonFanData['name']
+		lTags	=	{
+			'fan_id'	:	lJsonFanData['id'],
+			'fan_name'	:	lJsonFanData['name']
+		}
 
 
 		#
@@ -135,81 +109,56 @@ def	system_fans(pTags, pNodeSystem):
 
 			lJsonValue	=	lJsonFanData[lJsonKey]
 
-			lTags[C_KEY_TAG_API_ATTR]	=	lJsonKey
-
-			# Setup hashtable for results
-			lFields	=	{
-				C_KEY_FIELD_VALUE	:	lJsonValue
-			}
-
-			export._generic.measurement(lTags, lFields)
+			export._generic.measurement(
+				pApiPath	=	'system',
+				pApiSubpath	=	'fans',
+				pApiAttribute	=	lJsonKey,
+				pAttrValue	=	lJsonValue,
+				pTagsDict	=	lTags#,
+				# pFieldsDict	=	lFields
+			)
 
 		lFanNbr	=	lFanNbr + 1
 
 # ##############################################################################
 # ##############################################################################
 
-def	system_modelInfo(pTags, pNodeSystem):
+def	_modelInfo(pNodeSystem):
 
-	if 'model_info' not in pNodeSystem:
-		return
-
-	lJsonModelInfo	=	pNodeSystem['model_info']
-
-	lTags	=	pTags.copy()
-	lTags[C_KEY_TAG_API_PATH]	=	'system'
-	lTags[C_KEY_TAG_API_SUBPATH]	=	'model_info'
-
-	#
-	#	Iterate over model_info attributes and export them
-	#
-	for lJsonKey in lJsonModelInfo:
-
-	# 	if	(	lJsonKey	==	'id'
-	# 		or	lJsonKey	==	'name'	):
-	# 		#Those keys are used in tags, skip them.
-	# 		continue
-
-		lJsonValue	=	lJsonModelInfo[lJsonKey]
-
-		lTags[C_KEY_TAG_API_ATTR]	=	lJsonKey
-
-		# Setup hashtable for results
-		lFields	=	{
-			C_KEY_FIELD_VALUE	:	lJsonValue
-		}
-
-		export._generic.measurement(lTags, lFields)
+	export._generic.genericSubpath(
+		pApiPath='system',
+		pJsonRoot=pNodeSystem,
+		pSubpath	=	'model_info'
+		# pTagsDict=
+		# pFieldsDict=
+	)
 
 # ##############################################################################
 # ##############################################################################
 
-def	system_sensors(pTags, pNodeSystem):
+def	_sensors(pNodeSystem):
 
 	if 'sensors' not in pNodeSystem:
 		return
 
-	lNodeData	=	pNodeSystem['sensors']
-
-	lTags	=	pTags.copy()
-	lTags[C_KEY_TAG_API_PATH]	=	'system'
-	lTags[C_KEY_TAG_API_SUBPATH]	=	'sensors'
+	lJsonSensorsList	=	pNodeSystem['sensors']
 
 
 	#
 	#	Iterate over available sensors
 	#
-
-	lSensorsCount	=	len(lNodeData)
+	lSensorsCount	=	len(lJsonSensorsList)
 	lSensorNbr	=	0
 	while lSensorNbr < lSensorsCount :
-		# log.debug("lNodeData[%d] = %s" % (lSensorNbr, lNodeData[lSensorNbr]))
+		# log.debug("lJsonSensorsList[%d] = %s" % (lSensorNbr, lJsonSensorsList[lSensorNbr]))
 
-		lJsonSensorData	=	lNodeData[lSensorNbr]
+		lJsonSensorData	=	lJsonSensorsList[lSensorNbr]
 
 		# Use some sensor attributes as tags
-		lTags['sensor_id']	=	lJsonSensorData['id']
-		lTags['sensor_name']	=	lJsonSensorData['name']
+		lTags	=	{
+			'sensor_id'	:	lJsonSensorData['id'],
+			'sensor_name'	:	lJsonSensorData['name']
+		}
 
 
 		#
@@ -224,14 +173,15 @@ def	system_sensors(pTags, pNodeSystem):
 
 			lJsonValue	=	lJsonSensorData[lJsonKey]
 
-			lTags[C_KEY_TAG_API_ATTR]	=	lJsonKey
 
-			# Setup hashtable for results
-			lFields	=	{
-				C_KEY_FIELD_VALUE	:	lJsonValue
-			}
-
-			export._generic.measurement(lTags, lFields)
+			export._generic.measurement(
+				pApiPath	=	'system',
+				pApiSubpath	=	'sensors',
+				pApiAttribute	=	lJsonKey,
+				pAttrValue	=	lJsonValue,
+				pTagsDict	=	lTags#,
+				# pFieldsDict	=	lFields
+			)
 
 		lSensorNbr	=	lSensorNbr + 1
 

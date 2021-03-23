@@ -9,7 +9,11 @@
 
 import config
 
-
+# ##############################################################################
+# ##############################################################################
+#
+#	Logging configuration
+#
 import logging
 FORMAT = "[%(filename)s +%(lineno)s - %(funcName)20s() ] %(message)s"
 logging.basicConfig(format=FORMAT)
@@ -17,11 +21,161 @@ logging.basicConfig(format=FORMAT)
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
+# ##############################################################################
+# ##############################################################################
+
+C_KEY_TAG_API_PATH	=	'api_path'
+C_KEY_TAG_API_SUBPATH	=	'api_subpath'
+C_KEY_TAG_API_ATTR	=	'api_attribute'
+
+C_KEY_FIELD_VALUE	=	'value'
+
+# ##############################################################################
+# ##############################################################################
+
+def	_export_influxdb(pMeasurement, pTagsDict, pFieldsDict):
+
+	# Merge given tags with common tags
+	# lTags	= __tags_commonDict() | pTagsDict
+	lTags	=	{**__tags_commonDict(), **pTagsDict}
+
+	# Encode the tags dictionnary to a string
+	lTagsStr	=	__tags_dicToString(lTags)
+
+	# Encode the fields dictionnary to a string
+	lFieldsStr	=	__fields_dicToString(pFieldsDict)
 
 
-def measurement(pTagsDict, pFieldsDict):
+	#
+	#	Generate the output line
+	#
 
-	lTags	= __tags_common()
+	# Add measurement name
+	lOutput	= pMeasurement
+
+	# Add tags
+	if lTagsStr != '':
+		lOutput	+= ',' + lTagsStr
+
+	# Add fields
+	lOutput	+= ' '
+	lOutput	+= lFieldsStr
+
+	# Print the line
+	print(lOutput)
+
+
+# ##############################################################################
+# ##############################################################################
+
+def measurement(pApiPath, pApiAttribute, pAttrValue, pApiSubpath='', pTagsDict={}, pFieldsDict={}):
+
+	#
+	#	Tags content
+	#
+	lTagsDict	=	pTagsDict.copy()
+
+	lTagsDict[C_KEY_TAG_API_PATH]	= pApiPath
+	lTagsDict[C_KEY_TAG_API_ATTR]	= pApiAttribute
+
+	if pApiSubpath != '':
+		lTagsDict[C_KEY_TAG_API_SUBPATH]	= pApiSubpath
+
+
+	#
+	#	Fields content
+	#
+	lFieldsDict	=	pFieldsDict.copy()
+	lFieldsDict[C_KEY_FIELD_VALUE]	=	pAttrValue
+
+
+	#
+	#	Export the measurement
+	#
+	_export_influxdb(
+		config.INFLUXDB_MEASUREMENT,
+		lTagsDict,
+		lFieldsDict
+	)
+
+# ##############################################################################
+# ##############################################################################
+
+def	genericSubpath(pApiPath, pJsonRoot, pSubpath, pTagsDict={}, pFieldsDict={}):
+
+	if pSubpath not in pJsonRoot:
+		return
+
+	lJsonSubpath	=	pJsonRoot[pSubpath]
+
+
+	#
+	#	Iterate over model_info attributes and export them
+	#
+	for lJsonKey in lJsonSubpath:
+
+		lJsonValue	=	lJsonSubpath[lJsonKey]
+
+		measurement(
+			pApiPath	=	pApiPath,
+			pApiSubpath	=	pSubpath,
+			pApiAttribute	=	lJsonKey,
+			pAttrValue	=	lJsonValue,
+			pTagsDict	=	pTagsDict,
+			pFieldsDict	=	pFieldsDict
+		)
+
+# ##############################################################################
+# ##############################################################################
+
+def	__fields_dicToString(pFieldsDict):
+
+	retval	=	''
+
+	for lFieldName in pFieldsDict:
+		lFieldValue = pFieldsDict[lFieldName]
+
+		if retval != '':
+			retval	+= ','
+
+		retval	+= lFieldName
+		retval	+= '='
+		if type(lFieldValue) == str:
+			retval	+= "\"" + lFieldValue + "\""
+		else:
+			retval	+= str(lFieldValue)
+
+	return retval
+
+# ##############################################################################
+# ##############################################################################
+
+def __tags_common():
+	retval	=	''
+
+	retval	+=	'endpoint'
+	retval	+=	'='
+	retval	+=	config.FREEBOX_HOST
+
+	return retval
+
+# ##############################################################################
+# ##############################################################################
+
+def __tags_commonDict():
+
+	retval	=	{}
+
+	retval['host']	=	config.FREEBOX_HOST
+
+	return retval
+
+# ##############################################################################
+# ##############################################################################
+
+def	__tags_dicToString(pTagsDict):
+
+	retval	=	''
 
 	for lTagName in pTagsDict:
 		lTagValue = pTagsDict[lTagName]
@@ -32,71 +186,14 @@ def measurement(pTagsDict, pFieldsDict):
 			lTagValue	=	lTagValue.replace("=", "\\=")
 			lTagValue	=	lTagValue.replace(" ", "\\ ")
 
-		if lTags != '':
-			lTags	+= ','
-		
-		lTags	+= lTagName
-		lTags	+= '='
-		lTags	+= str(lTagValue) # Tags are always strings
+		if retval != '':
+			retval	+= ','
 
-
-	lFields	= ''
-
-	for lFieldName in pFieldsDict:
-		lFieldValue = pFieldsDict[lFieldName]
-
-		if lFields != '':
-			lFields	+= ','
-		
-		lFields	+= lFieldName
-		lFields	+= '='
-		if type(lFieldValue) == str:
-			lFields	+= "\"" + lFieldValue + "\""
-		else:
-			lFields	+= str(lFieldValue)
-
-
-	lOutput	= config.INFLUXDB_MEASUREMENT
-
-	if lTags != '':
-		lOutput	+= ',' + lTags
-
-	lOutput	+= ' '
-	lOutput	+= lFields
-
-	print(lOutput)
-
-
-
-def __exportGenericJson(pMeasurementPath, pJson):
-
-	if 'result' not in pJson:
-		return
-
-	# log.debug( "json_raw = %s" % json_raw )
-
-
-	lTags = {
-		"path"	:	pMeasurementPath
-	}
-
-
-	# Setup hashtable for results
-	lFields	=	{}
-	# Add the JSON answer's content as fields
-	for lJsonTag in pJson['result']:
-		lFields[lJsonTag]	=	pJson['result'][lJsonTag]
-
-
-	__export(lTags, lFields)
-
-
-
-def __tags_common():
-	retval	=	''
-
-	retval	+=	'endpoint'
-	retval	+=	'='
-	retval	+=	config.FREEBOX_HOST
+		retval	+= lTagName
+		retval	+= '='
+		retval	+= str(lTagValue) # Tags are always strings
 
 	return retval
+
+# ##############################################################################
+# ##############################################################################
