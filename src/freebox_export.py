@@ -587,49 +587,6 @@ def	switch_ports():
 
 
 
-def	switch_status():
-
-	lMeasurementPath	=	"switch/status"
-
-	switch_json_raw = freebox_api.get_switch_status()
-	if 'result' not in switch_json_raw:
-		return
-
-	# log.debug( "switch_json_raw == %s" % switch_json_raw )
-
-	lJsonObjectSwitchStatus	=	switch_json_raw['result']
-
-	lTags = {
-		"path"	:	lMeasurementPath
-	}
-
-
-	# Add the JSON answer's content as fields
-	lPortsCount	=	len(lJsonObjectSwitchStatus)
-	lPortNbr	=	0
-	while lPortNbr < lPortsCount :
-		# Setup hashtable for results
-		lFields	=	{}
-
-		for lJsonKey in lJsonObjectSwitchStatus[lPortNbr]:
-			lJsonValue	=	lJsonObjectSwitchStatus[lPortNbr][lJsonKey]
-
-			if	(	lJsonKey	==	'id'	):
-				# This data is considered as a tag
-				lTags[lJsonKey]	=	lJsonValue
-
-			elif	(	lJsonKey	==	'mac_list'	):
-				log.warn("Unimplemented key: %s" % lJsonKey)
-
-			else:
-				lFields[lJsonKey]	=	lJsonValue
-
-		__export(lTags, lFields)
-
-		lPortNbr	=	lPortNbr + 1
-
-
-
 def	wifi_ap():
 
 	lMeasurementPath	=	"wifi/ap/stations"

@@ -35,6 +35,7 @@ import freebox_export
 import export.connection
 import export.lan
 import export.system
+import export.switch
 import freebox.api as freebox_api
 
 
@@ -550,7 +551,7 @@ def do_export(creds, s_switch, s_ports, s_sys, s_disk, s_lan, s_wifi, s_lan_inte
     # option -S
     #
     if s_switch:
-        freebox_export.switch_status()
+        export.switch.status()
 
     #
     # Option -P
@@ -621,7 +622,7 @@ if __name__ == '__main__':
             default=config.FREEBOX_HOST,
                         help="Specify endpoint name or address")
 
-    parser.add_argument('-S', '--status-switch',
+    parser.add_argument('-S', '--switch-status',
                         dest='status_switch',
                         action='store_true',
                         help="Get and show switch status")
