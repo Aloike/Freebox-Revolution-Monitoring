@@ -13,6 +13,18 @@ from hashlib import sha1
 
 from . import credentials
 
+# ##############################################################################
+# ##############################################################################
+#
+#	Logging configuration
+#
+import logging
+
+log = logging.getLogger(__name__)
+log.setLevel(logging.INFO)
+
+# ##############################################################################
+# ##############################################################################
 
 # global ENDPOINT
 g_freebox_hostname = ""
@@ -20,14 +32,10 @@ g_freebox_hostname = ""
 # global g_freebox_session_token
 g_freebox_session_token = ""
 
+# ##############################################################################
+# ##############################################################################
 
 def init(pFreeboxHostname, pAppId, pAppName, pDeviceName):
-import logging
-FORMAT = "[%(filename)s +%(lineno)s - %(funcName)20s() ] %(message)s"
-logging.basicConfig(format=FORMAT)
-
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
 
 	# Needed to generate the endpoint string
 	setHostname(pFreeboxHostname)
@@ -83,6 +91,8 @@ def __sendRequest_get(pApiUrl):
 		# print("%s::%s: Failed request: %s\n" % (__name__, __sendRequest_get.__name__, r.text))
 		log.error("%s: Failed request: `%s`: %d: %s\n" % (__sendRequest_get.__name__, lRequestUrl, r.status_code, r.text))
 
+# ##############################################################################
+# ##############################################################################
 
 def __sendRequest_post(pApiUrl, pData):
 	lRequestUrl = __endpoint()
@@ -97,6 +107,8 @@ def __sendRequest_post(pApiUrl, pData):
 		# log.error("Failed request: `%s`" % ( r.text))
 		log.error("%s: Failed request: `%s`: %d: %s\n" % (__sendRequest_get.__name__, lRequestUrl, r.status_code, r.text))
 
+# ##############################################################################
+# ##############################################################################
 
 def challengeGet(freebox_app_id):
 
@@ -108,37 +120,48 @@ def challengeGet(freebox_app_id):
 	# 	print("Failed request: %s\n" % r.text)
 	return __sendRequest_get('login/authorize/' + freebox_app_id)
 
+# ##############################################################################
+# ##############################################################################
 
 def get_connection_stats():
 	lApiUrl = 'connection/'
 
 	return __sendRequest_get(lApiUrl)
 
+# ##############################################################################
+# ##############################################################################
 
 def get_connection_ftth():
 	lApiUrl = 'connection/ftth/'
 
 	return __sendRequest_get(lApiUrl)
 
+# ##############################################################################
+# ##############################################################################
 
 def get_connection_xdsl():
 	lApiUrl = 'connection/xdsl/'
 
 	return __sendRequest_get(lApiUrl)
 
+# ##############################################################################
+# ##############################################################################
 
 def get_lan_config():
 	lApiUrl = 'lan/config/'
 
 	return __sendRequest_get(lApiUrl)
 
+# ##############################################################################
+# ##############################################################################
 
 def get_lan_interfaces():
 	lApiUrl = 'lan/browser/interfaces/'
 
 	return __sendRequest_get(lApiUrl)
 
-
+# ##############################################################################
+# ##############################################################################
 # old name: get_interfaces_hosts
 def get_lan_interface_hostsList(pInterface):
 	lApiUrl	=	'lan/browser/'
@@ -146,18 +169,24 @@ def get_lan_interface_hostsList(pInterface):
 
 	return __sendRequest_get(lApiUrl)
 
+# ##############################################################################
+# ##############################################################################
 
 def get_storage_disk():
 	lApiUrl = 'storage/disk/'
 
 	return __sendRequest_get(lApiUrl)
 
+# ##############################################################################
+# ##############################################################################
 
 def get_system():
 	lApiUrl = 'system/'
 
 	return __sendRequest_get(lApiUrl)
 
+# ##############################################################################
+# ##############################################################################
 
 def get_switch_port_stats(pPort):
 	# -P => update pour avec POP
@@ -167,20 +196,24 @@ def get_switch_port_stats(pPort):
 
 	return __sendRequest_get(lApiUrl)
 
+# ##############################################################################
+# ##############################################################################
 
 def get_switch_status():
 	lApiUrl = 'switch/status/'
 
 	return __sendRequest_get(lApiUrl)
 
-
+# ##############################################################################
+# ##############################################################################
 # old name: get_wifi_statsx
 def get_wifi_accessPointsList():
 	lApiUrl = 'wifi/ap/'
 
 	return __sendRequest_get(lApiUrl)
 
-
+# ##############################################################################
+# ##############################################################################
 # old name:get_wifi_stats
 def get_wifi_accessPoint_stations(pAccessPoint):
 	# -P => update pour avec POP
@@ -190,6 +223,8 @@ def get_wifi_accessPoint_stations(pAccessPoint):
 
 	return __sendRequest_get(lApiUrl)
 
+# ##############################################################################
+# ##############################################################################
 
 def	isRegistered():
 

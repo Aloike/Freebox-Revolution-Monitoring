@@ -9,8 +9,6 @@
 #	Logging configuration
 #
 import logging
-FORMAT = "[%(filename)s +%(lineno)s - %(funcName)20s() ] %(message)s"
-logging.basicConfig(format=FORMAT)
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)

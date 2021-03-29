@@ -17,11 +17,9 @@ import export._generic
 #	Logging configuration
 #
 import logging
-FORMAT = "[%(filename)s +%(lineno)s - %(funcName)20s() ] %(message)s"
-logging.basicConfig(format=FORMAT)
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
+log.setLevel(logging.INFO)
 
 # ##############################################################################
 # ##############################################################################
@@ -29,9 +27,10 @@ log.setLevel(logging.DEBUG)
 def	all():
 
 	sys_json_raw = freebox_api.get_system()
+	log.debug( "sys_json_raw == %s" % sys_json_raw)
+
 	if 'result' not in sys_json_raw:
 		return
-	# log.debug( "sys_json_raw['result'] == %s" % sys_json_raw['result'])
 
 
 	lNodeData	=	sys_json_raw['result']
