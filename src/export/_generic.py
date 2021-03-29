@@ -3,12 +3,6 @@
 # coding: utf-8
 # pylint: disable=C0103,C0111,W0621
 
-# import os
-
-# from datetime import datetime
-
-import config
-
 # ##############################################################################
 # ##############################################################################
 #
@@ -30,14 +24,20 @@ C_KEY_TAG_API_ATTR	=	'api_attribute'
 
 C_KEY_FIELD_VALUE	=	'value'
 
+g_measurementName	=	"unnamed_measurement"
+g_tagsCommon_dict	=	{}
+
 # ##############################################################################
 # ##############################################################################
 
-def	_export_influxdb(pMeasurement, pTagsDict, pFieldsDict):
+def	_export_influxdb(pMeasurementName, pTagsDict, pFieldsDict):
 
 	# Merge given tags with common tags
 	# lTags	= __tags_commonDict() | pTagsDict
-	lTags	=	{**__tags_commonDict(), **pTagsDict}
+	lTags	=	{
+		**tagsCommon_dict(),
+		**pTagsDict
+	}
 
 	# Encode the tags dictionnary to a string
 	lTagsStr	=	__tags_dicToString(lTags)
@@ -51,7 +51,7 @@ def	_export_influxdb(pMeasurement, pTagsDict, pFieldsDict):
 	#
 
 	# Add measurement name
-	lOutput	= pMeasurement
+	lOutput	= pMeasurementName
 
 	# Add tags
 	if lTagsStr != '':
@@ -73,7 +73,7 @@ def measurement(pApiPath, pApiAttribute, pAttrValue, pApiSubpath='', pTagsDict={
 	#
 	#	Measurement name
 	#
-	lMeasurement	=	config.INFLUXDB_MEASUREMENT
+	lMeasurement	=	measurementName()
 	lMeasurement	+=	"_" + pApiPath
 
 	if (pApiSubpath != ''):
@@ -169,6 +169,20 @@ def	genericSubpath(pApiPath, pJsonRoot, pSubpath, pTagsDict={}, pFieldsDict={}):
 # ##############################################################################
 # ##############################################################################
 
+def	measurementName():
+	# global	g_measurementName
+	return g_measurementName
+
+# ##############################################################################
+# ##############################################################################
+
+def	setMeasurementName(pName):
+	global	g_measurementName
+	g_measurementName	=	pName
+
+# ##############################################################################
+# ##############################################################################
+
 def	__fields_dicToString(pFieldsDict):
 
 	retval	=	''
@@ -191,25 +205,15 @@ def	__fields_dicToString(pFieldsDict):
 # ##############################################################################
 # ##############################################################################
 
-def __tags_common():
-	retval	=	''
-
-	retval	+=	'endpoint'
-	retval	+=	'='
-	retval	+=	config.FREEBOX_HOST
-
-	return retval
+def	tagsCommon_dict():
+	return	g_tagsCommon_dict
 
 # ##############################################################################
 # ##############################################################################
 
-def __tags_commonDict():
-
-	retval	=	{}
-
-	retval['host']	=	config.FREEBOX_HOST
-
-	return retval
+def	setTagsCommon_dict(pTagsDict):
+	global	g_tagsCommon_dict
+	g_tagsCommon_dict	=	pTagsDict
 
 # ##############################################################################
 # ##############################################################################

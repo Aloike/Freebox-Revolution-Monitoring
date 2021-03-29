@@ -7,7 +7,7 @@ import os
 
 from datetime import datetime
 
-import config
+import application_config as config
 import freebox.api as freebox_api
 
 
@@ -57,7 +57,7 @@ def __export(pTagsDict, pFieldsDict):
 			lFields	+= str(lFieldValue)
 
 
-	lOutput	= config.INFLUXDB_MEASUREMENT
+	lOutput	= config.measurement_namePrefix()
 
 	if lTags != '':
 		lOutput	+= ',' + lTags
@@ -98,7 +98,7 @@ def __tags_common():
 
 	retval	+=	'endpoint'
 	retval	+=	'='
-	retval	+=	config.FREEBOX_HOST
+	retval	+=	config.freebox_hostname()
 
 	return retval
 
@@ -492,10 +492,11 @@ def	storage_disk():
 	json_raw = freebox_api.get_storage_disk()
 	log.debug("json_raw= %s" % json_raw)
 	
+	log.warn("Unimplemented method.")
+
 	if 'result' not in json_raw:
 		return
 
-	log.warn("Unimplemented method.")
 	# TODO:
 
 	# tag1="Disque"

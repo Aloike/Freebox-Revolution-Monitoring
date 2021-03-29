@@ -7,7 +7,6 @@ import os
 
 from datetime import datetime
 
-import config
 import freebox.api as fbx_api
 
 import export._generic

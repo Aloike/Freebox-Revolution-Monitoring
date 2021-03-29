@@ -6,25 +6,22 @@
 
 import hmac
 import json
-import os
 import requests
 import sys
 
-if sys.version_info >= (3, 0):
-    import configparser as configp
-else:
-    import ConfigParser as configp
-
 from hashlib import sha1
+
+from . import credentials
 
 
 # global ENDPOINT
-g_freebox_hostname = "toto"
+g_freebox_hostname = ""
 
 # global g_freebox_session_token
 g_freebox_session_token = ""
 
 
+def init(pFreeboxHostname, pAppId, pAppName, pDeviceName):
 import logging
 FORMAT = "[%(filename)s +%(lineno)s - %(funcName)20s() ] %(message)s"
 logging.basicConfig(format=FORMAT)
@@ -32,11 +29,17 @@ logging.basicConfig(format=FORMAT)
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
+	# Needed to generate the endpoint string
+	setHostname(pFreeboxHostname)
 
+	# if credentials.read(__endpoint()) is not True:
+	# 	credentials.create(pAppId, pAppName, pDeviceName)
 
-# def init():
-	# log.info("init")
+	# assert credentials.read(__endpoint()) == True, "Can't read credentials! Has the application been registered?"
+	credentials.read(__endpoint())
 
+# ##############################################################################
+# ##############################################################################
 
 def __apiUrl(pUrl):
 	retval = __endpoint()
@@ -44,8 +47,13 @@ def __apiUrl(pUrl):
 
 	return retval
 
+# ##############################################################################
+# ##############################################################################
 
 def	__endpoint():
+	# if g_freebox_hostname == "":
+	assert g_freebox_hostname != "", "Hostname must have been defined!"
+
 	retval="http://" + g_freebox_hostname + "/api/v8/"
 	return retval
 
@@ -91,8 +99,6 @@ def __sendRequest_post(pApiUrl, pData):
 
 
 def challengeGet(freebox_app_id):
-	# api_url = '%s/login/authorize/%s' % (ENDPOINT, freebox_app_id)
-	# api_url = __apiUrl('login/authorize/' + freebox_app_id)
 
 	# r = requests.get(api_url)
 
@@ -185,124 +191,93 @@ def get_wifi_accessPoint_stations(pAccessPoint):
 	return __sendRequest_get(lApiUrl)
 
 
-def	_credentials_filePath():
-	# script_dir = os.path.dirname(os.path.realpath(__file__))
-	# cfg_file = os.path.join(script_dir, ".credentials")
+def	isRegistered():
 
-	cfg_file = os.path.join(os.getcwd(), ".credentials")
+	return credentials.exists()
 
-	return cfg_file
+# ##############################################################################
+# ##############################################################################
 
+def login_registerApplication(pAppId, pAppName, pAppVersion, pDeviceName):
+	#global app_id,app_name,device_name
+	if credentials.exists():
+		if 	(	credentials.track_id()	is not None
+			and	credentials.app_token()	is not None	):
+			log.info("Already registered")
+			return True
 
-def login_authGet(pRegister):
-
-	lEndpoint = __endpoint()
-
-	cfg_file = _credentials_filePath()
-	ret_args={}
-	f = configp.RawConfigParser()
-	f.read(cfg_file)
-
-	try:
-		_ = f.has_section(lEndpoint)
-
-		ret_args.update(track_id= f.get(lEndpoint, "track_id"))
-		ret_args.update(app_token= f.get(lEndpoint, "app_token"))
-
-		if f.has_option(lEndpoint, "app_id"):
-				ret_args.update(app_id= f.get(lEndpoint, "app_id")) 
-		else:
-				ret_args.update(app_id= app_id)
-
-		if f.has_option(lEndpoint, "app_name"):
-				ret_args.update(app_name= f.get(lEndpoint, "app_name")) 
-		else:
-				ret_args.update(app_name= app_name) 
-
-		if f.has_option(lEndpoint, "device_name"):
-				ret_args.update(device_name= f.get(lEndpoint, "device_name")) 
-		else:
-				ret_args.update(device_name= device_name)
-
-	except configp.NoSectionError:
-		if pRegister:
-				return None
-		else:
-				exit()
-
-	return ret_args
+	log.info("Doing registration")
 
 
-def login_registerApplication(creds, pAppId, pAppName, pAppVersion, pDeviceName):
-    #global app_id,app_name,device_name
-    if creds is not None:
-        if 'track_id' in creds and 'app_token' in creds:
-            print("Already registered, exiting")
-            return
+	#
+	# Prepare the POST request content
+	#
+	headers = {'Content-type': 'application/json'}
+	app_info = {
+		'app_id': pAppId,
+		'app_name': pAppName,
+		'app_version': pAppVersion,
+		'device_name': pDeviceName
+	}
+	json_payload = json.dumps(app_info)
 
-    print("Doing registration")
-    headers = {'Content-type': 'application/json'}
-    app_info = {
-        'app_id': pAppId,
-        'app_name': pAppName,
-        'app_version': pAppVersion,
-        'device_name': pDeviceName
-    }
-    json_payload = json.dumps(app_info)
+	#
+	# Post the authorization request
+	#
+	lApiUrl = __apiUrl( 'login/authorize/' )
+	r = requests.post(lApiUrl, headers=headers, data=json_payload)
+	register_infos = None
 
-    lApiUrl = __apiUrl( 'login/authorize/')
-    r = requests.post(lApiUrl, headers=headers, data=json_payload)
-    register_infos = None
+	if r.status_code == 200:
+		register_infos = r.json()
+	else:
+		print('Failed registration: %s\n' % r.text)
+		return False
 
-    if r.status_code == 200:
-        register_infos = r.json()
-    else:
-        print('Failed registration: %s\n' % r.text)
+	#
+	# Store authentication infos
+	#
+	log.debug("register_infos = %s" % register_infos)
+	lJsonRegisterInfos	=	register_infos['result']
+	credentials.write(
+		__endpoint(),
+		pAppId,
+		pAppName,
+		pDeviceName,
+		lJsonRegisterInfos['track_id'],
+		lJsonRegisterInfos['app_token']
+	)
 
-    login_authSet(pAppId, pAppName, pDeviceName, register_infos['result'])
-    print("Don't forget to accept auth on the Freebox panel !")
+	print("Don't forget to accept auth on the Freebox panel !")
+	return True
 
+# ##############################################################################
+# ##############################################################################
 
-def login_authSet(pAppId, pAppName, pDeviceName, auth_infos):
-
-    lEndpoint= __endpoint()
-
-    cfg_file = _credentials_filePath()
-    f = configp.RawConfigParser()
-
-    f.add_section(lEndpoint)
-    f.set(lEndpoint,	"track_id",		auth_infos['track_id'])
-    f.set(lEndpoint,	"app_token",	auth_infos["app_token"])
-    f.set(lEndpoint,	"app_id",		pAppId)
-    f.set(lEndpoint,	"app_name",		pAppName)
-    f.set(lEndpoint,	"device_name",	pDeviceName)
-
-#    with open(cfg_file, "ab") as authFile:
-    with open(cfg_file, "a") as authFile:
-        f.write(authFile)
-
-
-def session_open(freebox_app_id, pAppToken, pTrackId):
+def session_open(pAppId):
 
 	global g_freebox_session_token
 
+	lFreeboxAppToken	=	credentials.app_token()
+	lFreeboxTrackId	=	credentials.track_id()
+
 
 	# Fetch challenge
-	resp = challengeGet(pTrackId)
+	resp = challengeGet(lFreeboxTrackId)
 	challenge = resp['result']['challenge']
 
 	# Generate session password
 	if sys.version_info >= (3, 0):
-		h = hmac.new(bytearray(pAppToken, 'ASCII'), bytearray(challenge, 'ASCII'), sha1)
+		h = hmac.new(bytearray(lFreeboxAppToken, 'ASCII'), bytearray(challenge, 'ASCII'), sha1)
 	else:
-		h = hmac.new(pAppToken, challenge, sha1)
+		h = hmac.new(lFreeboxAppToken, challenge, sha1)
 	password = h.hexdigest()
 
 
 	lApiUrl = 'login/session/'
 
 	app_info = {
-		'app_id': freebox_app_id,
+		'app_id': pAppId,
 		'password': password
 	}
 	json_payload = json.dumps(app_info)
@@ -312,7 +287,12 @@ def session_open(freebox_app_id, pAppToken, pTrackId):
 	g_freebox_session_token = retval['result']['session_token']
 	return retval
 
+# ##############################################################################
+# ##############################################################################
 
 def setHostname(pHostname):
 	global g_freebox_hostname
 	g_freebox_hostname = pHostname
+
+# ##############################################################################
+# ##############################################################################
