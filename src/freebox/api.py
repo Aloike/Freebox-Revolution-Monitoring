@@ -191,7 +191,7 @@ def get_system():
 def get_switch_port_stats(pPort):
 	# -P => update pour avec POP
 	lApiUrl =	'switch/port/'
-	lApiUrl	+=	str(pPort)
+	lApiUrl	+=	str(pPort) + '/'
 	lApiUrl	+=	'stats/'
 
 	return __sendRequest_get(lApiUrl)
