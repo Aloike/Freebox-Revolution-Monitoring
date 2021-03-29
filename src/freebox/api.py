@@ -65,31 +65,45 @@ def	__endpoint():
 	retval="http://" + g_freebox_hostname + "/api/v8/"
 	return retval
 
+# ##############################################################################
+# ##############################################################################
 
-def __sendRequest_get(pApiUrl):
-
-	global g_freebox_session_token
+def __sendRequest_get(pApiUrl, pAcceptNoToken=False):
 
 	lRequestUrl = __endpoint()
 	lRequestUrl += pApiUrl
 
-	if g_freebox_session_token == "":
+	log.debug("Request URL: '%s'." % lRequestUrl)
+
+	#
+	#	Manage session token
+	#
+	global g_freebox_session_token
+	lHeaders	=	{}
+
+	if	(	pAcceptNoToken	==	True ):
+		# Nothing to do
+		lHeaders	= {}
+
+	elif g_freebox_session_token == "":
 		log.warning("No session token has been found!")
 
-	headers = {
-		'X-Fbx-App-Auth': g_freebox_session_token
-	}
+	else:
+		lHeaders = {
+			'X-Fbx-App-Auth': g_freebox_session_token
+		}
 
-	r = requests.get(lRequestUrl, headers=headers)
+	#
+	#	Send request
+	#
+	r = requests.get(lRequestUrl, headers=lHeaders)
 
 	if r.status_code == 200:
 		return r.json()
 	elif r.status_code == 403:
-		# print("%s::%s: Failed request: %s\n" % (__name__, __sendRequest_get.__name__, r.text))
-		log.error("%s: Failed request: `%s`: %d: %s\n" % (__sendRequest_get.__name__, lRequestUrl, r.status_code, r.text))
+		log.error("Failed request: `%s`: %d: %s\n" % ( lRequestUrl, r.status_code, r.text))
 	else:
-		# print("%s::%s: Failed request: %s\n" % (__name__, __sendRequest_get.__name__, r.text))
-		log.error("%s: Failed request: `%s`: %d: %s\n" % (__sendRequest_get.__name__, lRequestUrl, r.status_code, r.text))
+		log.error("Failed request: `%s`: %d: %s\n" % ( lRequestUrl, r.status_code, r.text))
 
 # ##############################################################################
 # ##############################################################################
@@ -105,20 +119,19 @@ def __sendRequest_post(pApiUrl, pData):
 	else:
 		# print("%s: Failed request: %s\n" % __name__, r.text)
 		# log.error("Failed request: `%s`" % ( r.text))
-		log.error("%s: Failed request: `%s`: %d: %s\n" % (__sendRequest_get.__name__, lRequestUrl, r.status_code, r.text))
+		log.error("Failed request: `%s`: %d: %s\n" % ( lRequestUrl, r.status_code, r.text))
 
 # ##############################################################################
 # ##############################################################################
 
-def challengeGet(freebox_app_id):
+def challengeGet(pFbxAppId):
 
-	# r = requests.get(api_url)
+	lUrl	=	'login/authorize/' + pFbxAppId
 
-	# if r.status_code == 200:
-	# 	return r.json()
-	# else:
-	# 	print("Failed request: %s\n" % r.text)
-	return __sendRequest_get('login/authorize/' + freebox_app_id)
+	return __sendRequest_get(
+		lUrl,
+		pAcceptNoToken	=	True
+	)
 
 # ##############################################################################
 # ##############################################################################
