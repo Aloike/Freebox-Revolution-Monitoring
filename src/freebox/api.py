@@ -119,7 +119,7 @@ def __sendRequest_post(pApiUrl, pData):
 	else:
 		# print("%s: Failed request: %s\n" % __name__, r.text)
 		# log.error("Failed request: `%s`" % ( r.text))
-		log.error("Failed request: `%s`: %d: %s\n" % ( lRequestUrl, r.status_code, r.text))
+		log.error("Failed request: `%s` with data '%s': %d: %s\n" % ( lRequestUrl, pData, r.status_code, r.text))
 
 # ##############################################################################
 # ##############################################################################
