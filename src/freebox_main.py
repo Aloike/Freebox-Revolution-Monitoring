@@ -24,7 +24,6 @@ import sys
 
 
 import application_config as app_cfg
-import freebox_export
 import export.application_infos
 import export.connection
 import export.lan
@@ -110,7 +109,7 @@ def do_export():
         export.lan.config()
         export.lan.interfaces()
         export.lan.interfaces_hosts()
-        freebox_export.switch_ports()
+        export.switch.ports_stats()
         export.switch.status()
         export.system.all()
         export.storage.disk()
@@ -131,8 +130,8 @@ def do_export():
         if app_cfg.export_lan_interfaces_hosts():
             export.lan.interfaces_hosts()
 
-        if app_cfg.export_switch_ports_status():
-            freebox_export.switch_ports()
+        if app_cfg.export_switch_ports_stats():
+            export.switch.ports_stats()
 
         if app_cfg.export_switch_status():
             export.switch.status()

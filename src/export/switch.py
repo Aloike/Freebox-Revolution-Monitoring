@@ -9,6 +9,8 @@ import freebox.api as freebox_api
 
 import export._generic
 
+from .objects	import SwitchPortStats
+
 # ##############################################################################
 # ##############################################################################
 #
@@ -41,6 +43,54 @@ def	_mac_list(pJsonSwitchPortStatus, pTags):
 			pAttrValue	=	lJsonHostMac['hostname'],
 			pTagsDict	=	lTags
 			# pFieldsDict	=	lFields
+		)
+
+# ##############################################################################
+# ##############################################################################
+
+def	ports_stats():
+
+	#
+	#	Fetch switch ports list to retrieve ports IDs
+	#
+	lJsonSwitchPortStatusList	=	freebox_api.get_switch_status()
+
+	if 'result' not in lJsonSwitchPortStatusList:
+		log.error("No result in lJsonSwitchPortStatusList: %s" %
+			lJsonSwitchPortStatusList
+		)
+		return
+
+	# log.debug("switch_json_raw['result'] = %s" % switch_json_raw['result'])
+
+	lPortsIdList=[]
+	for lJsonSwitchPortStatus in lJsonSwitchPortStatusList['result']:
+		lPortsIdList.append( lJsonSwitchPortStatus['id'] )
+
+
+	#
+	#	Use the list of ports IDs to retrieve each port statistics
+	#
+	for lPortId in lPortsIdList :
+
+		lTags	=	{
+			'port_id'	:	lPortId
+		}
+
+		lJsonSwitchPortStatsAnswer	=	freebox_api.get_switch_port_stats( lPortId )
+		# log.debug("    +-- lJsonSwitchPortStats = %s" % lJsonSwitchPortStats)
+
+		if 'result' not in lJsonSwitchPortStatsAnswer:
+			log.error("No result in lJsonSwitchPortStatsAnswer: %s" %
+				lJsonSwitchPortStatsAnswer
+			)
+			continue
+
+		SwitchPortStats.fromJson(
+			pApiPath	=	"switch/port/stats",
+			pApiSubpath	=	'',
+			pTagsDict	=	lTags,
+			pJsonObjectSwitchPortStats	=	lJsonSwitchPortStatsAnswer['result']
 		)
 
 # ##############################################################################

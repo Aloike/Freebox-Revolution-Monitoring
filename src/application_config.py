@@ -43,7 +43,7 @@ __config_options	=	{
 	'export_lan_interfaces'	:	False,
 	'export_lan_interfaces_hosts'	:	False,
 	'export_storage_disk'	:	False,
-	'export_switch_ports_status'	:	False,
+	'export_switch_ports_stats'	:	False,
 	'export_switch_status'	:	False,
 	'export_system'	:	False,
 	'export_wifi_usage'	:	False
@@ -246,9 +246,9 @@ def parse_args():
 
 	parser.add_argument(
 		'-P',
-		'--export-switch-ports-status',
-		default	=	__config_options['export_switch_ports_status'],
-		dest	=	'export_switch_ports_status',
+		'--export-switch-ports-stats',
+		default	=	__config_options['export_switch_ports_stats'],
+		dest	=	'export_switch_ports_stats',
 		action	=	'store_true',
 		help	=	"Get and show switch ports statistics."
 	)
@@ -306,7 +306,7 @@ def parse_args():
 	__config_options['export_lan_interfaces']	=	lArgs.export_lan_interfaces
 	__config_options['export_lan_interfaces_hosts']	=	lArgs.export_lan_interfaces_hosts
 	__config_options['export_storage_disk']	=	lArgs.export_storage_disk
-	__config_options['export_switch_ports_status']	=	lArgs.export_switch_ports_status
+	__config_options['export_switch_ports_stats']	=	lArgs.export_switch_ports_stats
 	__config_options['export_switch_status']	=	lArgs.export_switch_status
 	__config_options['export_system']	=	lArgs.export_system
 	__config_options['export_wifi_usage']	=	lArgs.export_wifi_usage
@@ -421,8 +421,8 @@ def	export_storage_disk():
 # ##############################################################################
 # ##############################################################################
 
-def	export_switch_ports_status():
-	return __configBooleanGet('export_switch_ports_status')
+def	export_switch_ports_stats():
+	return __configBooleanGet('export_switch_ports_stats')
 
 # ##############################################################################
 # ##############################################################################
