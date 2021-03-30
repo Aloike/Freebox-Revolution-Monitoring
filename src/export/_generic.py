@@ -94,8 +94,17 @@ def measurement(pApiPath, pApiAttribute, pAttrValue, pApiSubpath='', pTagsDict={
 	#
 	lFieldsDict	=	pFieldsDict.copy()
 
-	if isinstance(pAttrValue, numbers.Number):
+	if isinstance(pAttrValue, bool):
+		if pAttrValue is True:
+			lFieldsDict[C_KEY_FIELD_VALUENUM]	=	1
+			lFieldsDict[C_KEY_FIELD_VALUESTR]	=	'True'
+		else:
+			lFieldsDict[C_KEY_FIELD_VALUENUM]	=	0
+			lFieldsDict[C_KEY_FIELD_VALUESTR]	=	'False'
+
+	elif isinstance(pAttrValue, numbers.Number):
 		lFieldsDict[C_KEY_FIELD_VALUENUM]	=	pAttrValue
+
 	else:
 		lFieldsDict[C_KEY_FIELD_VALUESTR]	=	pAttrValue
 
