@@ -3,6 +3,8 @@
 # coding: utf-8
 # pylint: disable=C0103,C0111,W0621
 
+import numbers
+
 # ##############################################################################
 # ##############################################################################
 #
@@ -20,7 +22,8 @@ C_KEY_TAG_API_PATH	=	'api_path'
 C_KEY_TAG_API_SUBPATH	=	'api_subpath'
 C_KEY_TAG_API_ATTR	=	'api_attribute'
 
-C_KEY_FIELD_VALUE	=	'value'
+C_KEY_FIELD_VALUENUM	=	'value_num'
+C_KEY_FIELD_VALUESTR	=	'value_str'
 
 g_measurementName	=	"unnamed_measurement"
 g_tagsCommon_dict	=	{}
@@ -98,7 +101,11 @@ def measurement(pApiPath, pApiAttribute, pAttrValue, pApiSubpath='', pTagsDict={
 	#	Fields content
 	#
 	lFieldsDict	=	pFieldsDict.copy()
-	lFieldsDict[C_KEY_FIELD_VALUE]	=	pAttrValue
+
+	if isinstance(pAttrValue, numbers.Number):
+		lFieldsDict[C_KEY_FIELD_VALUENUM]	=	pAttrValue
+	else:
+		lFieldsDict[C_KEY_FIELD_VALUESTR]	=	pAttrValue
 
 
 	#
@@ -193,10 +200,14 @@ def	__fields_dicToString(pFieldsDict):
 
 		retval	+= lFieldName
 		retval	+= '='
-		if type(lFieldValue) == str:
-			retval	+= "\"" + lFieldValue + "\""
-		else:
+		if isinstance(lFieldValue, numbers.Number):
+			# If the field value is considered a number, write it directly
 			retval	+= str(lFieldValue)
+		else:
+			# Otherwise, wrap the field inside double quotes to consider it as
+			# a string.
+			retval	+= "\"" + str(lFieldValue) + "\""
+
 
 	return retval
 
