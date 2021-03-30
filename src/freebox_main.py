@@ -53,7 +53,8 @@ log.setLevel(logging.DEBUG)
 APPLICATION_VERSION	=	"no_description"
 try:
     APPLICATION_VERSION = subprocess.check_output(
-            ["git", "describe", "--long", "--tags", "--always", "--dirty"]
+            ["git", "describe", "--long", "--tags", "--always", "--dirty"],
+            cwd =   os.path.dirname(os.path.realpath(__file__))
         ).strip().decode('utf-8')
 except:
     APPLICATION_VERSION	=	"(git describe error)"
