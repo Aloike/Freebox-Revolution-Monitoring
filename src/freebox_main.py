@@ -28,8 +28,9 @@ import freebox_export
 import export.application_infos
 import export.connection
 import export.lan
-import export.system
+import export.storage
 import export.switch
+import export.system
 import export.wifi
 import freebox.api as freebox_api
 
@@ -112,7 +113,7 @@ def do_export():
         freebox_export.switch_ports()
         export.switch.status()
         export.system.all()
-        freebox_export.storage_disk()
+        export.storage.disk()
         export.wifi.accessPoints_stations()
     else:
         if  app_cfg.export_application_infos():
@@ -140,7 +141,7 @@ def do_export():
             export.system.all()
 
         if app_cfg.export_storage_disk():
-            freebox_export.storage_disk()
+            export.storage.disk()
 
         if app_cfg.export_wifi_usage():
             export.wifi.accessPoints_stations()
