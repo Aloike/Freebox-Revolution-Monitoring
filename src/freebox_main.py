@@ -102,34 +102,47 @@ def do_export():
     #   Export
     # --------------------------------------------------------------------------
 
-    if  app_cfg.export_connection():
+    if app_cfg.export_all():
+        export.application_infos.all(__file__, APPLICATION_VERSION)
         export.connection.all()
-
-    if  app_cfg.export_lan_config():
         export.lan.config()
+        export.lan.interfaces()
+        export.lan.interfaces_hosts()
+        freebox_export.switch_ports()
+        export.switch.status()
+        export.system.all()
+        freebox_export.storage_disk()
+        export.wifi.accessPoints_stations()
+    else:
         if  app_cfg.export_application_infos():
             export.application_infos.all(__file__, APPLICATION_VERSION)
 
-    if app_cfg.export_lan_interfaces():
-        freebox_export.lan_interfaces()
+        if  app_cfg.export_connection():
+            export.connection.all()
 
-    if app_cfg.export_lan_interfaces_hosts():
-        freebox_export.lan_interfaces_hosts()
+        if  app_cfg.export_lan_config():
+            export.lan.config()
 
-    if app_cfg.export_switch_ports_status():
-        freebox_export.switch_ports()
+        if app_cfg.export_lan_interfaces():
+            export.lan.interfaces()
 
-    if app_cfg.export_switch_status():
-        export.switch.status()
+        if app_cfg.export_lan_interfaces_hosts():
+            export.lan.interfaces_hosts()
 
-    if app_cfg.export_system():
-        export.system.all()
+        if app_cfg.export_switch_ports_status():
+            freebox_export.switch_ports()
 
-    if app_cfg.export_storage_disk():
-        freebox_export.storage_disk()
+        if app_cfg.export_switch_status():
+            export.switch.status()
 
-    if app_cfg.export_wifi_usage():
-        export.wifi.accessPoints_stations()
+        if app_cfg.export_system():
+            export.system.all()
+
+        if app_cfg.export_storage_disk():
+            freebox_export.storage_disk()
+
+        if app_cfg.export_wifi_usage():
+            export.wifi.accessPoints_stations()
 
 # ##############################################################################
 # ##############################################################################
@@ -162,7 +175,7 @@ def main():
         freebox_api.login_registerApplication(
             app_cfg.app_id(),
             app_cfg.app_name(),
-            VERSION,
+            APPLICATION_VERSION,
             app_cfg.device_name()
         )
 
@@ -174,8 +187,13 @@ def main():
             return 0
 
     else:
-        # Export metrics
-        do_export()
+        # Check the application registration status with the Freebox
+        if not register_status():
+            return 1
+
+        else:
+            # Export metrics
+            do_export()
 
 
     return 0
