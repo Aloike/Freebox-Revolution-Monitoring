@@ -75,14 +75,6 @@ def measurement(pApiPath, pApiAttribute, pAttrValue, pApiSubpath='', pTagsDict={
 	#	Measurement name
 	#
 	lMeasurement	=	measurementName()
-	lMeasurement	+=	"_" + pApiPath
-
-	if (pApiSubpath != ''):
-		lMeasurement	+=	"_" + pApiSubpath
-
-	lMeasurement	+=	"_" + pApiAttribute
-
-	lMeasurement	=	lMeasurement.replace('/', '_')
 
 
 	#
