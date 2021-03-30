@@ -30,6 +30,7 @@ import export.connection
 import export.lan
 import export.system
 import export.switch
+import export.wifi
 import freebox.api as freebox_api
 
 # ##############################################################################
