@@ -102,36 +102,6 @@ def __tags_common():
 
 
 
-def __get_creation_date(file):
-	stat = os.stat(file)
-	return stat.st_mtime 
-
-
-# fbx telegraf docker info
-def application_infos(pFile, pVersion):
-
-	# Convertir Timestamp en datetime
-	update_date = datetime.fromtimestamp(__get_creation_date(__file__))
-	update_str = datetime.ctime(update_date)
-
-	lTags = {
-		'name' : 'application_infos',
-		'script_version' : pVersion,
-		'file' : pFile,
-	}
-
-	lFields = {
-		'last_updated' : update_str
-	}
-
-	__export(lTags, lFields)
-
-
-
-
-
-
-
 def lan_interfaces():
 
 	lMeasurementPath	=	"lan/interface"

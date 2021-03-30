@@ -35,6 +35,7 @@ __config_options	=	{
 
 	'measurement_namePrefix'	:	'freebox',
 
+	'export_application_infos'	:	True,
 	'export_connection'	:	False,
 	'export_lan_config'	:	False,
 	'export_lan_interfaces'	:	False,
@@ -179,6 +180,15 @@ def parse_args():
 	#                     help="Specify endpoint name or address")
 
 	parser.add_argument(
+		'-a',
+		'--export-application-infos',
+		default	=	__config_options['export_application_infos'],
+		dest	=	'export_application_infos',
+		action	=	'store_true',
+		help	=	"Show local application infos."
+	)
+
+	parser.add_argument(
 		'-C',
 		'--export-connection',
 		default	=	__config_options['export_connection'],
@@ -277,6 +287,7 @@ def parse_args():
 
 	__config_options['measurement_namePrefix']	=	lArgs.measurement_namePrefix
 
+	__config_options['export_application_infos']	=	lArgs.export_application_infos
 	__config_options['export_connection']	=	lArgs.export_connection
 	__config_options['export_lan_config']	=	lArgs.export_lan_config
 	__config_options['export_lan_interfaces']	=	lArgs.export_lan_interfaces
@@ -351,6 +362,12 @@ def	freebox_hostname():
 
 def	measurement_namePrefix():
 	return __configStringGet('measurement_namePrefix')
+
+# ##############################################################################
+# ##############################################################################
+
+def	export_application_infos():
+	return __configBooleanGet('export_application_infos')
 
 # ##############################################################################
 # ##############################################################################

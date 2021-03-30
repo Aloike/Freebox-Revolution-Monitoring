@@ -11,31 +11,21 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import requests
+
 import os
-# import json
-# import hmac
-import time
-import argparse
+import subprocess
 import sys
-import time
-from time import strftime, gmtime
-from datetime import datetime
-# from hashlib import sha1
 
 
-# To install the latest version of Unidecode from the Python package index, use these commands:
-# $ pip install unidecode
-from unidecode import unidecode
-#
-# if sys.version_info >= (3, 0):
-#     import configparser as configp
-# else:
-#     import ConfigParser as configp
+# # To install the latest version of Unidecode from the Python package index, use
+# # these commands:
+# # $ pip install unidecode
+# from unidecode import unidecode
 
 
 import application_config as app_cfg
 import freebox_export
+import export.application_infos
 import export.connection
 import export.lan
 import export.system
@@ -56,7 +46,16 @@ log.setLevel(logging.DEBUG)
 # ##############################################################################
 # ##############################################################################
 
-VERSION = "1.0.0 2021/03/22"
+# APPLICATION_VERSION = "1.0.0 2021/03/22"
+
+# Get application version from Git description
+APPLICATION_VERSION	=	"no_description"
+try:
+    APPLICATION_VERSION = subprocess.check_output(
+            ["git", "describe", "--long", "--tags", "--always", "--dirty"]
+        ).strip().decode('utf-8')
+except:
+    APPLICATION_VERSION	=	"(git describe error)"
 
 # ##############################################################################
 # ##############################################################################
@@ -93,10 +92,6 @@ def do_export():
     export._generic.setTagsCommon_dict(lCommonTagsDict)
 
 
-    # Export application infos.
-    freebox_export.application_infos(__file__, VERSION)
-
-
     # Fetch session_token
     freebox_api.session_open(
         app_cfg.app_id()
@@ -112,6 +107,8 @@ def do_export():
 
     if  app_cfg.export_lan_config():
         export.lan.config()
+        if  app_cfg.export_application_infos():
+            export.application_infos.all(__file__, APPLICATION_VERSION)
 
     if app_cfg.export_lan_interfaces():
         freebox_export.lan_interfaces()
