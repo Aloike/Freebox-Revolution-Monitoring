@@ -67,9 +67,8 @@ def get_creation_date(file):
 # ##############################################################################
 # ##############################################################################
 
-def register_status():
-    
-    if freebox_api.isRegistered() != True:
+def do_checkRegisterStatus():
+    if not freebox_api.isRegistered():
         print("Status: invalid config, auth not done.")
         print("Please run `%s --register` to register app." % sys.argv[0])
         return False
@@ -181,14 +180,14 @@ def main():
 
     elif app_cfg.application_registerStatus():
         # Check the application registration status with the Freebox
-        if not register_status():
-            return 1
-        else:
+        if do_checkRegisterStatus() is True:
             return 0
+        else:
+            return 1
 
     else:
         # Check the application registration status with the Freebox
-        if not register_status():
+        if not freebox_api.isRegistered():
             return 1
 
         else:
@@ -198,7 +197,12 @@ def main():
 
     return 0
 
+# ##############################################################################
+# ##############################################################################
 
 if __name__ == '__main__':
     exit( main() )
     # log.info ("Application name: %s" % app_cfg.app_name() )
+
+# ##############################################################################
+# ##############################################################################
