@@ -80,13 +80,20 @@ def measurement(pApiPath, pApiAttribute, pAttrValue, pApiSubpath='', pTagsDict={
 	#
 	#	Tags content
 	#
-	lTagsDict	=	pTagsDict.copy()
+	lTagsDict	=	{}
 
+	# Add API path, subpath and attribute first so it's easier to browse the
+	# output.
 	lTagsDict[C_KEY_TAG_API_PATH]	= pApiPath
-	lTagsDict[C_KEY_TAG_API_ATTR]	= pApiAttribute
 
 	if pApiSubpath != '':
+		# Add the API subpath if it exists
 		lTagsDict[C_KEY_TAG_API_SUBPATH]	= pApiSubpath
+
+	lTagsDict[C_KEY_TAG_API_ATTR]	= pApiAttribute
+
+	# Add extra tags
+	lTagsDict.update( pTagsDict )
 
 
 	#
