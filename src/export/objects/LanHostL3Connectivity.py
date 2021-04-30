@@ -8,8 +8,22 @@ from ..	import	_generic
 
 # ##############################################################################
 # ##############################################################################
+#
+#	Logging configuration
+#
+import logging
+
+log = logging.getLogger(__name__)
+log.setLevel(logging.INFO)
+
+# ##############################################################################
+# ##############################################################################
 
 def	fromJson(pApiPath, pApiSubpath, pTagsDict, pJsonObjectLanHostL3Connectivity):
+
+	log.debug(
+		"pJsonObjectLanHostL3Connectivity = %s",
+		pJsonObjectLanHostL3Connectivity )
 
 	# Set some tags
 	lTags	=	pTagsDict.copy()
@@ -37,7 +51,7 @@ def	fromJson(pApiPath, pApiSubpath, pTagsDict, pJsonObjectLanHostL3Connectivity)
 				pApiSubpath	=	pApiSubpath,
 				pApiAttribute	=	lJsonKey,
 				pAttrValue	=	pJsonObjectLanHostL3Connectivity[lJsonKey],
-				pTagsDict	=	pTagsDict#,
+				pTagsDict	=	lTags#,
 				# pFieldsDict	=	lFields
 			)
 
