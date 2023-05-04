@@ -62,7 +62,7 @@ def	__endpoint():
 	# if g_freebox_hostname == "":
 	assert g_freebox_hostname != "", "Hostname must have been defined!"
 
-	retval="http://" + g_freebox_hostname + "/api/v8/"
+	retval="http://" + g_freebox_hostname + "/api/"
 	return retval
 
 # ##############################################################################
@@ -126,7 +126,7 @@ def __sendRequest_post(pApiUrl, pData):
 
 def challengeGet(pFbxAppId):
 
-	lUrl	=	'login/authorize/' + pFbxAppId
+	lUrl	=	'v8/login/authorize/' + pFbxAppId
 
 	return __sendRequest_get(
 		lUrl,
@@ -137,7 +137,7 @@ def challengeGet(pFbxAppId):
 # ##############################################################################
 
 def get_connection_stats():
-	lApiUrl = 'connection/'
+	lApiUrl = 'v8/connection/'
 
 	return __sendRequest_get(lApiUrl)
 
@@ -145,7 +145,7 @@ def get_connection_stats():
 # ##############################################################################
 
 def get_connection_ftth():
-	lApiUrl = 'connection/ftth/'
+	lApiUrl = 'v8/connection/ftth/'
 
 	return __sendRequest_get(lApiUrl)
 
@@ -153,7 +153,7 @@ def get_connection_ftth():
 # ##############################################################################
 
 def get_connection_xdsl():
-	lApiUrl = 'connection/xdsl/'
+	lApiUrl = 'v8/connection/xdsl/'
 
 	return __sendRequest_get(lApiUrl)
 
@@ -161,7 +161,7 @@ def get_connection_xdsl():
 # ##############################################################################
 
 def get_lan_config():
-	lApiUrl = 'lan/config/'
+	lApiUrl = 'v8/lan/config/'
 
 	return __sendRequest_get(lApiUrl)
 
@@ -169,7 +169,7 @@ def get_lan_config():
 # ##############################################################################
 
 def get_lan_interfaces():
-	lApiUrl = 'lan/browser/interfaces/'
+	lApiUrl = 'v8/lan/browser/interfaces/'
 
 	return __sendRequest_get(lApiUrl)
 
@@ -177,7 +177,7 @@ def get_lan_interfaces():
 # ##############################################################################
 # old name: get_interfaces_hosts
 def get_lan_interface_hostsList(pInterface):
-	lApiUrl	=	'lan/browser/'
+	lApiUrl	=	'v8/lan/browser/'
 	lApiUrl	+=	pInterface
 
 	return __sendRequest_get(lApiUrl)
@@ -186,7 +186,7 @@ def get_lan_interface_hostsList(pInterface):
 # ##############################################################################
 
 def get_storage_disk():
-	lApiUrl = 'storage/disk/'
+	lApiUrl = 'v8/storage/disk/'
 
 	return __sendRequest_get(lApiUrl)
 
@@ -194,7 +194,7 @@ def get_storage_disk():
 # ##############################################################################
 
 def get_system():
-	lApiUrl = 'system/'
+	lApiUrl = 'v8/system/'
 
 	return __sendRequest_get(lApiUrl)
 
@@ -203,7 +203,7 @@ def get_system():
 
 def get_switch_port_stats(pPort):
 	# -P => update pour avec POP
-	lApiUrl =	'switch/port/'
+	lApiUrl =	'v8/switch/port/'
 	lApiUrl	+=	str(pPort) + '/'
 	lApiUrl	+=	'stats/'
 
@@ -213,7 +213,7 @@ def get_switch_port_stats(pPort):
 # ##############################################################################
 
 def get_switch_status():
-	lApiUrl = 'switch/status/'
+	lApiUrl = 'v8/switch/status/'
 
 	return __sendRequest_get(lApiUrl)
 
@@ -221,7 +221,7 @@ def get_switch_status():
 # ##############################################################################
 # old name: get_wifi_statsx
 def get_wifi_accessPointsList():
-	lApiUrl = 'wifi/ap/'
+	lApiUrl = 'v9/wifi/ap/'
 
 	return __sendRequest_get(lApiUrl)
 
@@ -230,7 +230,7 @@ def get_wifi_accessPointsList():
 # old name:get_wifi_stats
 def get_wifi_accessPoint_stations(pAccessPoint):
 	# -P => update pour avec POP
-	lApiUrl =	'wifi/ap/'
+	lApiUrl =	'v9/wifi/ap/'
 	lApiUrl	+=	str(pAccessPoint) + '/'
 	lApiUrl	+=	'stations/'
 
@@ -272,7 +272,7 @@ def login_registerApplication(pAppId, pAppName, pAppVersion, pDeviceName):
 	#
 	# Post the authorization request
 	#
-	lApiUrl = __apiUrl( 'login/authorize/' )
+	lApiUrl = __apiUrl( 'v8/login/authorize/' )
 	r = requests.post(lApiUrl, headers=headers, data=json_payload)
 	register_infos = None
 
@@ -322,7 +322,7 @@ def session_open(pAppId):
 	password = h.hexdigest()
 
 
-	lApiUrl = 'login/session/'
+	lApiUrl = 'v8/login/session/'
 
 	app_info = {
 		'app_id': pAppId,
