@@ -264,8 +264,6 @@ def get_and_print_metrics(creds, s_switch, s_ports, s_sys, s_disk, s_lan, s_wifi
     #freebox_app_id = "fr.freebox.seximonitor"
     #freebox_app_id = "fr.freebox.grafanamonitor"
     freebox_app_id = creds['app_id']
-    #
-    print(freebox_app_id)
 
     # setup output dataformat, default Graphite
 
