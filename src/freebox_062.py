@@ -213,7 +213,6 @@ def get_wifi_statsx(headers):
     api_url = '%s/v9/wifi/ap/' % (ENDPOINT)
 
     r = requests.get(api_url, headers=headers)
-    print(r)
 
     if r.status_code == 200:
         return r.json()
