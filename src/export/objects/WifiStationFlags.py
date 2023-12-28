@@ -1,14 +1,14 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 #-*- coding: utf-8 -*-
 # coding: utf-8
 # pylint: disable=C0103,C0111,W0621
 
-from ..	import	_generic
+from ..    import    _generic
 
 # ##############################################################################
 # ##############################################################################
 #
-#	Logging configuration
+#    Logging configuration
 #
 import logging
 
@@ -18,21 +18,21 @@ log.setLevel(logging.INFO)
 # ##############################################################################
 # ##############################################################################
 
-def	fromJson(pApiPath, pApiSubpath, pTagsDict, pJsonObjectWifiStationFlags):
+def    fromJson(pApiPath, pApiSubpath, pTagsDict, pJsonObjectWifiStationFlags):
 
-	#
-	#	Iterate over available keys
-	#
-	for lJsonKey in pJsonObjectWifiStationFlags:
+    #
+    #    Iterate over available keys
+    #
+    for lJsonKey in pJsonObjectWifiStationFlags:
 
-		_generic.measurement(
-			pApiPath	=	pApiPath,
-			pApiSubpath	=	pApiSubpath,
-			pApiAttribute	=	lJsonKey,
-			pAttrValue	=	pJsonObjectWifiStationFlags[lJsonKey],
-			pTagsDict	=	pTagsDict#,
-			# pFieldsDict	=	lFields
-		)
+        _generic.measurement(
+            pApiPath    =    pApiPath,
+            pApiSubpath    =    pApiSubpath,
+            pApiAttribute    =    lJsonKey,
+            pAttrValue    =    pJsonObjectWifiStationFlags[lJsonKey],
+            pTagsDict    =    pTagsDict#,
+            # pFieldsDict    =    lFields
+        )
 
 # ##############################################################################
 # ##############################################################################

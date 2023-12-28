@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 #-*- coding: utf-8 -*-
 # coding: utf-8
 # pylint: disable=C0103,C0111,W0621
@@ -50,14 +50,14 @@ log.setLevel(logging.DEBUG)
 # APPLICATION_VERSION = "1.0.0 2021/03/22"
 
 # Get application version from Git description
-APPLICATION_VERSION	=	"no_description"
+APPLICATION_VERSION    =    "no_description"
 try:
     APPLICATION_VERSION = subprocess.check_output(
             ["git", "describe", "--long", "--tags", "--always", "--dirty"],
             cwd =   os.path.dirname(os.path.realpath(__file__))
         ).strip().decode('utf-8')
 except:
-    APPLICATION_VERSION	=	"(git describe error)"
+    APPLICATION_VERSION    =    "(git describe error)"
 
 # ##############################################################################
 # ##############################################################################
@@ -144,6 +144,8 @@ def do_export():
 
         if app_cfg.export_wifi_usage():
             export.wifi.accessPoints_stations()
+
+    freebox_api.session_close()
 
 # ##############################################################################
 # ##############################################################################
