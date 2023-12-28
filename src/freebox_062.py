@@ -620,16 +620,21 @@ def get_and_print_metrics(creds, s_switch, s_ports, s_sys, s_disk, s_lan, s_wifi
                         if 'l3connectivities' in sys_json_raw['result'][k]:
                              length_l3_conn = len(sys_json_raw['result'][k]['l3connectivities'])
                              j=0
+                             lasttimeactivity = 0
                              while j<length_l3_conn :
                                   if sys_json_raw['result'][k]['l3connectivities'][j]['addr'] != "" :
                                       if 'id' in sys_json_raw['result'][k]['l2ident']:
                                           tag3=sys_json_raw['result'][k]['l2ident']['id']
                                           if sys_json_raw['result'][k]['l3connectivities'][j]['af']=="ipv4":
-                                              my_data[tag1+"."+tag2+"."+tag3+"."+'addr']=sys_json_raw['result'][k]['l3connectivities'][j]['addr']
-                                              my_data[tag1+"."+tag2+"."+tag3+"."+'last_activity']=datetime.fromtimestamp(sys_json_raw['result'][k]['l3connectivities'][j]['last_activity']).strftime("%c")
-                                              if 'primary_name' in sys_json_raw['result'][k]:my_data[tag1+"."+tag2+"."+tag3+"."+'primary_name']=sys_json_raw['result'][k]['primary_name']
-                                              if 'host_type' in sys_json_raw['result'][k]:my_data[tag1+"."+tag2+"."+tag3+"."+'host_type']=sys_json_raw['result'][k]['host_type']
-                                              if 'active' in sys_json_raw['result'][k]:my_data[tag1+"."+tag2+"."+tag3+"."+'active']=sys_json_raw['result'][k]['active']
+                                              if sys_json_raw['result'][k]['l3connectivities'][j]['last_activity'] > lasttimeactivity:
+                                                  lasttimeactivity=sys_json_raw['result'][k]['l3connectivities'][j]['last_activity']
+                                                  date_last_activity=datetime.fromtimestamp(lasttimeactivity)
+
+                                                  my_data[tag1+"."+tag2+"."+tag3+"."+'addr']=sys_json_raw['result'][k]['l3connectivities'][j]['addr']
+                                                  my_data[tag1+"."+tag2+"."+tag3+"."+'last_activity']=date_last_activity.strftime("%c")
+                                                  if 'primary_name' in sys_json_raw['result'][k]:my_data[tag1+"."+tag2+"."+tag3+"."+'primary_name']=sys_json_raw['result'][k]['primary_name']
+                                                  if 'host_type' in sys_json_raw['result'][k]:my_data[tag1+"."+tag2+"."+tag3+"."+'host_type']=sys_json_raw['result'][k]['host_type']
+                                                  if 'active' in sys_json_raw['result'][k]:my_data[tag1+"."+tag2+"."+tag3+"."+'active']=sys_json_raw['result'][k]['active']
                                   j=j+1
                         k=k+1
 
@@ -829,23 +834,27 @@ def get_and_print_metrics(creds, s_switch, s_ports, s_sys, s_disk, s_lan, s_wifi
                                          if 'interface' in sys_json_raw['result'][k]['host']:
                                                if sys_json_raw['result'][k]['host']['interface'] != "" :
                                                      m=0
+                                                     lasttimeactivity = 0
                                                      while m < length_l3_conn :
                                                          if sys_json_raw['result'][k]['host']['l3connectivities'][m]['af'] == "ipv4":
-                                                             my_data[tag1+"."+tag2+"."+tag3+"."+'primary_name']=sys_json_raw['result'][k]['host']['primary_name']
-                                                             my_data[tag1+"."+tag2+"."+tag3+"."+'host_type']=sys_json_raw['result'][k]['host']['host_type']
-                                                             my_data[tag1+"."+tag2+"."+tag3+"."+'interface']=sys_json_raw['result'][k]['host']['interface']
-                                                             my_data[tag1+"."+tag2+"."+tag3+"."+'addripv4']=sys_json_raw['result'][k]['host']['l3connectivities'][m]['addr']
-                                                             my_data[tag1+"."+tag2+"."+tag3+"."+'reachable']=sys_json_raw['result'][k]['host']['l3connectivities'][m]['reachable']
-                                                             my_data[tag1+"."+tag2+"."+tag3+"."+'active']=sys_json_raw['result'][k]['host']['l3connectivities'][m]['active']
-                                                        # tx/rx bytes
-                                                             my_data[tag1+"."+tag2+"."+tag3+"."+'rx_bytes']=sys_json_raw['result'][k]['rx_bytes']
-                                                             my_data[tag1+"."+tag2+"."+tag3+"."+'rx_rate']=sys_json_raw['result'][k]['rx_rate']
-                                                             my_data[tag1+"."+tag2+"."+tag3+"."+'tx_bytes']=sys_json_raw['result'][k]['tx_bytes']
-                                                             my_data[tag1+"."+tag2+"."+tag3+"."+'tx_rate']=sys_json_raw['result'][k]['tx_rate']
-                                                             lasttimeactivity=sys_json_raw['result'][k]['host']['l3connectivities'][m]['last_activity']
-                                                             date_last_activity=datetime.fromtimestamp(lasttimeactivity)
-                                                             my_data[tag1+"."+tag2+"."+tag3+"."+'last_activity_date']=date_last_activity.strftime("%c")
-                                                             my_data[tag1+"."+tag2+"."+tag3+"."+'AP_ref']=ap['id']
+                                                             if sys_json_raw['result'][k]['host']['l3connectivities'][m]['last_activity'] > lasttimeactivity:
+                                                                 lasttimeactivity=sys_json_raw['result'][k]['host']['l3connectivities'][m]['last_activity']
+                                                                 date_last_activity=datetime.fromtimestamp(lasttimeactivity)
+
+                                                                 my_data[tag1+"."+tag2+"."+tag3+"."+'primary_name']=sys_json_raw['result'][k]['host']['primary_name']
+                                                                 my_data[tag1+"."+tag2+"."+tag3+"."+'host_type']=sys_json_raw['result'][k]['host']['host_type']
+                                                                 my_data[tag1+"."+tag2+"."+tag3+"."+'interface']=sys_json_raw['result'][k]['host']['interface']
+                                                                 my_data[tag1+"."+tag2+"."+tag3+"."+'addripv4']=sys_json_raw['result'][k]['host']['l3connectivities'][m]['addr']
+                                                                 my_data[tag1+"."+tag2+"."+tag3+"."+'reachable']=sys_json_raw['result'][k]['host']['l3connectivities'][m]['reachable']
+                                                                 my_data[tag1+"."+tag2+"."+tag3+"."+'active']=sys_json_raw['result'][k]['host']['l3connectivities'][m]['active']
+                                                            # tx/rx bytes
+                                                                 my_data[tag1+"."+tag2+"."+tag3+"."+'rx_bytes']=sys_json_raw['result'][k]['rx_bytes']
+                                                                 my_data[tag1+"."+tag2+"."+tag3+"."+'rx_rate']=sys_json_raw['result'][k]['rx_rate']
+                                                                 my_data[tag1+"."+tag2+"."+tag3+"."+'tx_bytes']=sys_json_raw['result'][k]['tx_bytes']
+                                                                 my_data[tag1+"."+tag2+"."+tag3+"."+'tx_rate']=sys_json_raw['result'][k]['tx_rate']
+
+                                                                 my_data[tag1+"."+tag2+"."+tag3+"."+'last_activity_date']=date_last_activity.strftime("%c")
+                                                                 my_data[tag1+"."+tag2+"."+tag3+"."+'AP_ref']=ap['id']
                                                          m=m+1
                        k=k+1
 
