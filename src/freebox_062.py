@@ -1003,9 +1003,9 @@ def register_status(creds):
 
 # Main
 if __name__ == '__main__':
-    app_id='fr.freebox.grafanamonitor'
-    app_name='GrafanaMonitor'
-    device_name='GrafanServer'
+    app_id='fr.freebox.exporter.influx'
+    app_name='FbxExporterInfluxDB'
+    device_name='srv-timeseries'
 
 
     parser = argparse.ArgumentParser(add_help=False)
@@ -1032,7 +1032,7 @@ if __name__ == '__main__':
     parser.add_argument('-f', '--format',
                         dest='format',
             metavar='format',
-            default='graphite',
+            default='influxdb',
                         help="Specify output format between graphite and influxdb")
 
     parser.add_argument('-e', '--endpoint',
